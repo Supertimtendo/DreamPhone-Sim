@@ -1,5 +1,5 @@
 #dreamphone simulator alpha 1.7
-
+#TEST
 import webbrowser #required for webbrowser.open('dreamphone.jpg')
 import random #required for "random.shuffle()"
 import os #required for "os.linesep"
