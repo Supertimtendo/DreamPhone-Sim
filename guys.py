@@ -19,7 +19,7 @@ class guys:
     def __init__(self, name, phoneNo, hangout, clothing, recreation):
         self.name = name
         self.phoneNo = phoneNo
-        self.hangout  = hangout
+        self.hangout = hangout
         self.clothing = clothing
         self.recreation = recreation
 
@@ -32,3 +32,9 @@ class guys:
                     y+=1
                 guyslist[x] = guys(self, names[x], nums[x],locs[y],)
         pass
+
+# reworking the game logic to work with objects -
+# define guys as a class, populate boys as objects with all the appropriate attributes. for the clue reveal system
+# we need to initialize the game with an RNG of each boy what clue they are going to reveal about the chosen boy,
+# all clues will be negative deductions except for the few that are positive, which results in the "haha i'm not telling"
+# reveal (when the clue is a positive trait, i.e. they "ARE" at the mall, the game will turn this into a non-reveal).
