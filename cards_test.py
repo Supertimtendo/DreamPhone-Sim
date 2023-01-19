@@ -76,10 +76,11 @@ def discard_choice():
     while loop == 1:
         if len(in_hand) == 0:  # check that your hand is not empty
             print("you have no cards to discard.")
+            break
         else:
             show_hand()
             print("Please choose the card you wish to discard, or type 'back' to leave.")
-            card_choice = input().card_choice.lower() #which card do you want to discard?
+            card_choice = input().lower() #which card do you want to discard?
             if card_choice == 'back': #gives a way to back out of the discard choice loop
                 print("Exiting discard choice...")
                 break #leaves discard choice loop
