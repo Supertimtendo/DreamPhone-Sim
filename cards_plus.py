@@ -1,9 +1,6 @@
-import itertools
 import random
 import copy
 import time
-from itertools import cycle
-
 
 
 class Player:  #class Player constructor
@@ -31,7 +28,7 @@ player1 = Player(1,[],False,"") #sets player1 with no cards in hand
 player2 = Player(2,[],False,"") #sets the variable player2
 
 player_list=[player1,player2]
-player_cycle = itertools.cycle(player_list)
+#player_cycle = itertools.cycle(player_list)
 
 ##global stuff##
 
@@ -102,25 +99,20 @@ def starting_player():
                 else: print("Not a valid word.")
         else: print("Not a valid choice.")
 
-def next_player():
-    return next(player_cycle)
-
 def end_turn():
-    print(player_cycle)
-    print("Current player",whos_turn().playername)
-    if player_cycle == whos_turn():
-        print("test if the same")
-#        print(player_cycle.playername,"just finished their turn.",player_cycle.current_turn)
-#        whos_turn().current_turn = False
-#    if player_cycle != whos_turn():
-#        next_player().current_turn = True
-#        print(whos_turn().playername,"Is up!")
-#        print(whos_turn().playername, whos_turn().current_turn)
-
-#
-#    if whos_turn().current_turn == True:
-#        whos_turn().current_turn = False
-
+    for i in range(len(player_list)):   #iterates over all index numbers in player list var
+        if player_list[i] == whos_turn():   #if i is the index number of the item matching current player:
+            current_player_num = i  #sets var current_player_num to correct index number
+    if current_player_num == len(player_list) - 1: #checks if player rotation has reached end of list
+        next_player_num = 0 #sets the next player to start at list beginning
+    else:
+        next_player_num = current_player_num + 1    #not at end of the list, set next player num to advance by 1
+    print("Ending", whos_turn().playername, "'s turn.")
+    time.sleep(1)
+    whos_turn().current_turn = False    #turns off current player turn flag
+    print("next player up:",player_list[next_player_num].playername)
+    time.sleep(1)
+    player_list[next_player_num].current_turn = True    #turns on next player turn flag
 
 def shuffle():  # shuffles the game deck
     random.shuffle(game_deck)
@@ -273,7 +265,7 @@ def game_loop():
         count()
         print_whos_turn()
 
-        print ("Type a command to play. You can shuffle the deck ('shuffle'), draw a card ('draw'), and discard ('discard') from your hand.\nType 'look' to view the cards in your hand. You can choose a specific card to discard with ('discard choice'). The command ('reshuffle') will add the discard pile back into the draw deck.\nType 'more' for other commands.")
+        print ("Type a command to play. You can shuffle the deck ('shuffle'), draw a card ('draw'), and discard ('discard') from your hand.\nType 'look' to view the cards in your hand. ('end') will end your turn and pass to the next player. You can choose a specific card to discard with ('discard choice'). The command ('reshuffle') will add the discard pile back into the draw deck.\nType 'more' for other commands.")
         choice = input().lower()
         if choice not in valid_choices:
             print("Not a valid choice.\n")
