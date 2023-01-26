@@ -1,8 +1,6 @@
 import random
 import copy
 import time
-
-
 class Player:  #class Player constructor
     def __init__(self, playernumber, cardsinhand,current_turn,playername):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
@@ -11,18 +9,43 @@ class Player:  #class Player constructor
         self.playername = playername        #gives players a name attribute in the class
 
 class Cards:  #class Cards constructor
-    def __init__(self, name, detail):
+    def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal):
         self.name = name    #Class Cards gets a "name" attribute
-        self.detail = detail #Class Cards gets a "detail" attribute
+        self.phonenum = phonenum  #Class Cards gets a "detail" attribute
+        self.hangout = hangout
+        self.sport = sport
+        self.food = food
+        self.clothing = clothing
+        self.clue_to_reveal = clue_to_reveal
     def look(self):
-        print(self.name, self.detail)
+        print(self.name, self.phonenum)
 
 #building Cards objects:
-c0 = Cards("Bob","555-5551")
-c1 = Cards("Charlie","555-5552")
-c2 = Cards("Tom","555-5553")
-c3 = Cards("Kyle","555-5554")
-c4 = Cards("Mike","555-5557")
+c0 = Cards("Dave","5551111","Crosstown Mall","null","Cookies","Blue Jeans","")
+c1 = Cards("George","5551233","Crosstown Mall","null","Ice Cream","Tie","")
+c2 = Cards("Dale","5554566","Crosstown Mall","null","Ice Cream","Jacket","")
+c3 = Cards("Alan","5557899","Crosstown Mall","null","Cookies","Tie","")
+c4 = Cards("James","5552588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","")
+c5 = Cards("Phil","5553333","E.A.T.S. Snack Shop","null","Pizza","Glasses","")
+c6 = Cards("Bruce","5553699","E.A.T.S. Snack Shop","null","Pizza","Tie","")
+c7 = Cards("Tyler","5551477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","")
+c8 = Cards("Jamal","5559877","Reel Movies","null","Candy","Tie","")
+c9 = Cards("Gary","5553211","Reel Movies","null","Popcorn","Blue Jeans","")
+c10 = Cards("Dan","5557777","Reel Movies","null","Candy","Blue Jeans","")
+c11 = Cards("Spencer","5556544","Reel Movies","null","Popcorn","Jacket","")
+c12 = Cards("Mark","5558522","Woodland Park","Baseball","null","Hat","")
+c13 = Cards("Jason","5557411","Woodland Park","Baseball","null","Glasses","")
+c14 = Cards("Steve","5559999","Woodland Park","Skateboarding","null","Jacket","")
+c15 = Cards("John","5559633","Woodland Park","Skateboarding","null","Anything Yellow","")
+c16 = Cards("Paul","5555515","High Tide Beach","Volleyball","null","Anything Yellow","")
+c17 = Cards("Tony","5552442","High Tide Beach","Volleyball","null","Hat","")
+c18 = Cards("Wayne","5553535","High Tide Beach","Surfing","null","Anything Yellow","")
+c19 = Cards("Mike","5552226","High Tide Beach","Surfing","null","Hat","")
+c20 = Cards("Scott","5555599","Jim's Gym","Basketball","null","Anything Yellow","")
+c21 = Cards("Bob","5554884","Jim's Gym","Basketball","null","Glasses","")
+c22 = Cards("Carlos","5556668","Jim's Gym","Tennis","null","Hat","")
+c23 = Cards("Matt","5557557","Jim's Gym","Tennis","null","Glasses","")
+
 
 player1 = Player(1,[],False,"") #sets player1 with no cards in hand
 player2 = Player(2,[],False,"") #sets the variable player2
@@ -31,14 +54,46 @@ player_list=[player1,player2]
 #player_cycle = itertools.cycle(player_list)
 
 ##global stuff##
-
-card_list = [c0,c1,c2,c3,c4]  # this is the master list of cards in the deck. Can be user assignable.
+card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23]
+# this is the master list of cards in the deck. a way to reference a var list containing all card object names.
+# tried to find a less brute force way to do this but so far no luck.
 
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
 
 #functions
+
+def new_game_crush():
+    clue_list=[]   #makes bucket to hold all valid clues in
+    new_crush = random.randint(0, int(len(card_list)-1)) #rng a boy from the card list to be the crush
+    print(new_crush)
+    print ("Crush is:",card_list[new_crush].name)
+
+    for i in range (len(card_list)):   #creates a list of all possible clues in clue_list, removing "null" entries for foodsport wierdness
+        if card_list[i].hangout != "null": clue_list.append(card_list[i].hangout)
+        if card_list[i].sport != "null": clue_list.append(card_list[i].sport)
+        if card_list[i].food != "null": clue_list.append(card_list[i].food)
+        if card_list[i].clothing != "null": clue_list.append(card_list[i].clothing)
+
+    clue_list = list(set(clue_list)) #removes all duplicate entries from the list
+    random.shuffle(clue_list)  #shuffles clue list
+
+    for i in range(len(clue_list)):   #distributes all clues to all cards' "clue to reveal" attribute
+        card_list[i].clue_to_reveal = clue_list[i]
+
+
+    print("Type number")        #inital testing of sorting of clue feedback system
+    clue_check=input()
+    for i in range (len(card_list)):
+        if clue_check == card_list[i].phonenum:
+            print("valid number")
+            if card_list[i] == new_crush:
+                print("crush's number")
+            if card_list[i].clue_to_reveal == card_list[new_crush].food or card_list[new_crush].sport or card_list[new_crush].hangout or card_list[new_crush].clothing:
+                print("clue pertains to crush")
+            else: print("invalid number")
+
 
 def whos_turn():
     if player1.current_turn == True:
@@ -315,4 +370,6 @@ def game_loop():
             if choice == 'more':
                 print("You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
 
-game_loop()
+
+#game_loop()
+new_game_crush()
