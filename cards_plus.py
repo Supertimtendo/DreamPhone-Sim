@@ -2,10 +2,10 @@ import random
 import copy
 import time
 class Player:  #class Player constructor
-    def __init__(self, playernumber, cardsinhand,current_turn,playername):
+    def __init__(self, playernumber, cardsinhand, current_turn, playername):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
         self.cardsinhand = cardsinhand      #Class Player gets a "cardsinhand" attribute
-        self.current_turn=current_turn      #gives a boolean flag for if the player is currently playing or not
+        self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
         self.playername = playername        #gives players a name attribute in the class
 
 class Cards:  #class Cards constructor
@@ -61,14 +61,11 @@ card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
-
 #functions
 
 def new_game_crush():
-    clue_list=[]   #makes bucket to hold all valid clues in
-    new_crush = random.randint(0, int(len(card_list)-1)) #rng a boy from the card list to be the crush
-    print(new_crush)
-    print ("Crush is:",card_list[new_crush].name)
+    clue_list = []  # makes bucket to hold all valid clues in
+    crush = random.randint(0, int(len(card_list)-1)) #rng a boy from the card list to be the crush, adjusting len from starting at 1 while list index starts at 0
 
     for i in range (len(card_list)):   #creates a list of all possible clues in clue_list, removing "null" entries for foodsport wierdness
         if card_list[i].hangout != "null": clue_list.append(card_list[i].hangout)
@@ -79,21 +76,15 @@ def new_game_crush():
     clue_list = list(set(clue_list)) #removes all duplicate entries from the list
     random.shuffle(clue_list)  #shuffles clue list
 
-    for i in range(len(clue_list)):   #distributes all clues to all cards' "clue to reveal" attribute
+    for i in range(len(clue_list)):   #distributes all clues to all cards' "clue to reveal" player object attribute
         card_list[i].clue_to_reveal = clue_list[i]
+    return crush
 
-
-    print("Type number")        #inital testing of sorting of clue feedback system
-    clue_check=input()
-    for i in range (len(card_list)):
-        if clue_check == card_list[i].phonenum:
-            print("valid number")
-            if card_list[i] == new_crush:
-                print("crush's number")
-            if card_list[i].clue_to_reveal == card_list[new_crush].food or card_list[new_crush].sport or card_list[new_crush].hangout or card_list[new_crush].clothing:
-                print("clue pertains to crush")
-            else: print("invalid number")
-
+def starting_deal():
+    for i in range (3):
+        for i in range (len(player_list)):
+            player_list[i].cardsinhand.append(game_deck.pop(0))
+    print("All Players have drawn 3 cards from the deck.")
 
 def whos_turn():
     if player1.current_turn == True:
@@ -302,25 +293,25 @@ def look():
     else:
         print(whos_turn().playername,"looks closely at the cards in their hand.")
         for i in whos_turn().cardsinhand:
-            print(str(i.name),"- Phone#:",(i.detail))
+            print(str(i.name),"- Phone#:",(i.phonenum))
             time.sleep(.5)
-    time.sleep(2)
+    time.sleep(1)
 def count():
     #print("====Status====\nDraw Deck:",len(game_deck),"\nHand:",len(in_hand),"\nDiscard:",len(discard_pile),"\n")
     print(f"====Status====\nDraw Deck: {len(game_deck)}\n{whos_turn().playername}'s Hand: {len(whos_turn().cardsinhand)}\nDiscard: {len(discard_pile)}\n")
-    time.sleep(1.5)
+    time.sleep(.5)
 # now on to the main loop. it simply checks for inputs to run the outlined functions. nothing too crazy
 
 def game_loop():
     valid_choices=["end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
-    print("\nWelcome to deck game. This is a test routine for cards moving around in Python lists.\n")
+    print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     name_players()
     starting_player()
+    starting_deal()
     while True:
         count()
         print_whos_turn()
-
-        print ("Type a command to play. You can shuffle the deck ('shuffle'), draw a card ('draw'), and discard ('discard') from your hand.\nType 'look' to view the cards in your hand. ('end') will end your turn and pass to the next player. You can choose a specific card to discard with ('discard choice'). The command ('reshuffle') will add the discard pile back into the draw deck.\nType 'more' for other commands.")
+        print ("('look') - ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - ('more')")
         choice = input().lower()
         if choice not in valid_choices:
             print("Not a valid choice.\n")
@@ -370,6 +361,10 @@ def game_loop():
             if choice == 'more':
                 print("You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
 
+crush = new_game_crush()
+game_loop()
 
-#game_loop()
-new_game_crush()
+
+# I need to figure out how I want to do loud / quiet stuff with the text parser - might not be possible? focus on single player? / make pico dreamphone? I think i should
+# at least program the effect -"this part is quiet", "this part is loud" to practice the logic before i get sound involved. need to take recordings of dreamphone repsonses - maybe move project
+# to a website to act as phone (use a cellphone) and use real feelie cards /etc... i dunno hitting a logistical wall
