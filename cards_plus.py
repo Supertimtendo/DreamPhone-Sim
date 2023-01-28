@@ -145,6 +145,32 @@ def starting_player():
                 else: print("Not a valid word.")
         else: print("Not a valid choice.")
 
+def print_current_player_hand():
+    print(whos_turn().playername,"'s current hand is:")
+    for i in whos_turn().cardsinhand:
+        print(str(i.name), "- Phone#:", (i.phonenum))
+
+def call_number():
+    print("You pick up the phone to make a call. Please enter a number.")
+    valid_call = ()
+
+    while True:
+        dialed_number=input()
+        if dialed_number == "leave":
+            break
+
+        for i in whos_turn().cardsinhand:
+            if dialed_number == i.phonenum:
+                print("phone number belongs to",i.name)
+                i = last_dialed_boy
+                valid_call = True
+
+        if valid_call is True:
+            return last_dialed_boy
+
+        if valid_call is not True:
+            print("Wrong number. Try another number or dial ('leave') to exit.")
+
 def end_turn():
     for i in range(len(player_list)):   #iterates over all index numbers in player list var
         if player_list[i] == whos_turn():   #if i is the index number of the item matching current player:
@@ -303,14 +329,16 @@ def count():
 # now on to the main loop. it simply checks for inputs to run the outlined functions. nothing too crazy
 
 def game_loop():
-    valid_choices=["end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
+    valid_choices=["dial","end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
     print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     name_players()
     starting_player()
+    shuffle()
     starting_deal()
     while True:
         count()
         print_whos_turn()
+        print_current_player_hand()
         print ("('look') - ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - ('more')")
         choice = input().lower()
         if choice not in valid_choices:
@@ -347,6 +375,7 @@ def game_loop():
                 show_hand()
                 show_discard()
 
+            if choice == 'dial': last_dialed_boy = call_number()
             if choice == 'reshuffle': reshuffle()
             if choice == 'shuffle': shuffle()
             if choice == 'count deck': count_deck()
