@@ -9,7 +9,7 @@ class Player:  #class Player constructor
         self.playername = playername        #gives players a name attribute in the class
 
 class Cards:  #class Cards constructor
-    def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal):
+    def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal, first_call):
         self.name = name    #Class Cards gets a "name" attribute
         self.phonenum = phonenum  #Class Cards gets a "detail" attribute
         self.hangout = hangout
@@ -17,34 +17,35 @@ class Cards:  #class Cards constructor
         self.food = food
         self.clothing = clothing
         self.clue_to_reveal = clue_to_reveal
+        self.first_call = first_call
     def look(self):
         print(self.name, self.phonenum)
 
 #building Cards objects:
-c0 = Cards("Dave","5551111","Crosstown Mall","null","Cookies","Blue Jeans","")
-c1 = Cards("George","5551233","Crosstown Mall","null","Ice Cream","Tie","")
-c2 = Cards("Dale","5554566","Crosstown Mall","null","Ice Cream","Jacket","")
-c3 = Cards("Alan","5557899","Crosstown Mall","null","Cookies","Tie","")
-c4 = Cards("James","5552588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","")
-c5 = Cards("Phil","5553333","E.A.T.S. Snack Shop","null","Pizza","Glasses","")
-c6 = Cards("Bruce","5553699","E.A.T.S. Snack Shop","null","Pizza","Tie","")
-c7 = Cards("Tyler","5551477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","")
-c8 = Cards("Jamal","5559877","Reel Movies","null","Candy","Tie","")
-c9 = Cards("Gary","5553211","Reel Movies","null","Popcorn","Blue Jeans","")
-c10 = Cards("Dan","5557777","Reel Movies","null","Candy","Blue Jeans","")
-c11 = Cards("Spencer","5556544","Reel Movies","null","Popcorn","Jacket","")
-c12 = Cards("Mark","5558522","Woodland Park","Baseball","null","Hat","")
-c13 = Cards("Jason","5557411","Woodland Park","Baseball","null","Glasses","")
-c14 = Cards("Steve","5559999","Woodland Park","Skateboarding","null","Jacket","")
-c15 = Cards("John","5559633","Woodland Park","Skateboarding","null","Anything Yellow","")
-c16 = Cards("Paul","5555515","High Tide Beach","Volleyball","null","Anything Yellow","")
-c17 = Cards("Tony","5552442","High Tide Beach","Volleyball","null","Hat","")
-c18 = Cards("Wayne","5553535","High Tide Beach","Surfing","null","Anything Yellow","")
-c19 = Cards("Mike","5552226","High Tide Beach","Surfing","null","Hat","")
-c20 = Cards("Scott","5555599","Jim's Gym","Basketball","null","Anything Yellow","")
-c21 = Cards("Bob","5554884","Jim's Gym","Basketball","null","Glasses","")
-c22 = Cards("Carlos","5556668","Jim's Gym","Tennis","null","Hat","")
-c23 = Cards("Matt","5557557","Jim's Gym","Tennis","null","Glasses","")
+c0 = Cards("Dave","5551111","Crosstown Mall","null","Cookies","Blue Jeans","",True)
+c1 = Cards("George","5551233","Crosstown Mall","null","Ice Cream","Tie","",True)
+c2 = Cards("Dale","5554566","Crosstown Mall","null","Ice Cream","Jacket","",True)
+c3 = Cards("Alan","5557899","Crosstown Mall","null","Cookies","Tie","",True)
+c4 = Cards("James","5552588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","",True)
+c5 = Cards("Phil","5553333","E.A.T.S. Snack Shop","null","Pizza","Glasses","",True)
+c6 = Cards("Bruce","5553699","E.A.T.S. Snack Shop","null","Pizza","Tie","",True)
+c7 = Cards("Tyler","5551477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","",True)
+c8 = Cards("Jamal","5559877","Reel Movies","null","Candy","Tie","",True)
+c9 = Cards("Gary","5553211","Reel Movies","null","Popcorn","Blue Jeans","",True)
+c10 = Cards("Dan","5557777","Reel Movies","null","Candy","Blue Jeans","",True)
+c11 = Cards("Spencer","5556544","Reel Movies","null","Popcorn","Jacket","",True)
+c12 = Cards("Mark","5558522","Woodland Park","Baseball","null","Hat","",True)
+c13 = Cards("Jason","5557411","Woodland Park","Baseball","null","Glasses","",True)
+c14 = Cards("Steve","5559999","Woodland Park","Skateboarding","null","Jacket","",True)
+c15 = Cards("John","5559633","Woodland Park","Skateboarding","null","Anything Yellow","",True)
+c16 = Cards("Paul","5555515","High Tide Beach","Volleyball","null","Anything Yellow","",True)
+c17 = Cards("Tony","5552442","High Tide Beach","Volleyball","null","Hat","",True)
+c18 = Cards("Wayne","5553535","High Tide Beach","Surfing","null","Anything Yellow","",True)
+c19 = Cards("Mike","5552226","High Tide Beach","Surfing","null","Hat","",True)
+c20 = Cards("Scott","5555599","Jim's Gym","Basketball","null","Anything Yellow","",True)
+c21 = Cards("Bob","5554884","Jim's Gym","Basketball","null","Glasses","",True)
+c22 = Cards("Carlos","5556668","Jim's Gym","Tennis","null","Hat","",True)
+c23 = Cards("Matt","5557557","Jim's Gym","Tennis","null","Glasses","",True)
 
 
 player1 = Player(1,[],False,"") #sets player1 with no cards in hand
@@ -58,9 +59,10 @@ card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c
 # this is the master list of cards in the deck. a way to reference a var list containing all card object names.
 # tried to find a less brute force way to do this but so far no luck.
 
-game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck
+game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck. Use game_deck when moving stuff around, use card_list as universal master ref)
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
+
 #functions
 
 def new_game_crush():
@@ -161,8 +163,11 @@ def call_number():
 
         for i in whos_turn().cardsinhand:
             if dialed_number == i.phonenum:
-                print("phone number belongs to",i.name)
-                i = last_dialed_boy
+                for x in range(0,3):
+                    print("ring")
+                    time.sleep(.5)
+                time.sleep(1)
+                last_dialed_boy = i
                 valid_call = True
 
         if valid_call is True:
@@ -171,6 +176,49 @@ def call_number():
         if valid_call is not True:
             print("Wrong number. Try another number or dial ('leave') to exit.")
 
+def clue_reveal(last_dialed_boy):
+    #rejection check:
+    if last_dialed_boy.clue_to_reveal == card_list[crush].hangout\
+    or last_dialed_boy.clue_to_reveal == card_list[crush].sport\
+    or last_dialed_boy.clue_to_reveal == card_list[crush].food\
+    or last_dialed_boy.clue_to_reveal == card_list[crush].clothing: #if the clue would reveal the crush's hangout, food etc
+        response = "no_reveal"                                    #we do not give that information to the player
+
+    #type of reveal check:
+    no_crush_list = copy.copy(card_list)   #we need to look through all clues except for the crush's 'positive' clues
+    remove_it = card_list[crush]           # so I copy the master card list and remove the crush entry from it
+    no_crush_list.remove(remove_it)
+    for i in no_crush_list:   #iterate through the whole no crush list, checking against what kind of clue it is
+        if last_dialed_boy.clue_to_reveal == i.hangout: response = "hangout_reveal"   #and set the type of response
+        if last_dialed_boy.clue_to_reveal == i.sport: response = "sport_reveal"
+        if last_dialed_boy.clue_to_reveal == i.food: response = "food_reveal"
+        if last_dialed_boy.clue_to_reveal == i.clothing: response = "clothing_reveal"
+    #redial modifier in card class
+
+    if last_dialed_boy.first_call == True:
+        print(f"Hello? This is {last_dialed_boy.name}. You want to know about your crush?")
+        time.sleep(2)
+    if last_dialed_boy.first_call == False:
+        print("You again? I already told you...")
+        time.sleep(2)
+
+    #loud repsonses, everyone hears
+    if response == "hangout_reveal": print("I know where he hangs out,")
+    if response == "sport_reveal": print("He is very athletic,")
+    if response == "food_reveal": print("He eats a lot of food,")
+    if response == "clothing_reveal": print("He looks good in whatever he wears,")
+    time.sleep(2)
+
+    #quiet response, only player hears
+    grammar = ""
+    if last_dialed_boy.clue_to_reveal == "Hat" or "Jacket" or "Tie": grammar = "a"
+
+    if response == "hangout_reveal": print(f"but he doesn't hang out at {last_dialed_boy.clue_to_reveal}.")
+    if response == "sport_reveal": print(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}.")
+    if response == "food_reveal": print(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}.")
+    if response == "clothing_reveal": print(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}.")
+    last_dialed_boy.first_call = False
+    time.sleep(2)
 def end_turn():
     for i in range(len(player_list)):   #iterates over all index numbers in player list var
         if player_list[i] == whos_turn():   #if i is the index number of the item matching current player:
@@ -185,6 +233,9 @@ def end_turn():
     print("next player up:",player_list[next_player_num].playername)
     time.sleep(1)
     player_list[next_player_num].current_turn = True    #turns on next player turn flag
+
+    for i in card_list:     #Reset redial flag when players swap
+        i.first_call = True
 
 def shuffle():  # shuffles the game deck
     random.shuffle(game_deck)
@@ -329,7 +380,7 @@ def count():
 # now on to the main loop. it simply checks for inputs to run the outlined functions. nothing too crazy
 
 def game_loop():
-    valid_choices=["dial","end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
+    valid_choices=["redial","dial","end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
     print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     name_players()
     starting_player()
@@ -375,7 +426,17 @@ def game_loop():
                 show_hand()
                 show_discard()
 
-            if choice == 'dial': last_dialed_boy = call_number()
+            if choice == 'dial':
+                last_dialed_boy = call_number()
+                clue_reveal(last_dialed_boy)
+            if choice == 'redial':
+                try: last_dialed_boy
+                except NameError: last_dialed_boy = None
+                if last_dialed_boy == None: print("no call made yet")
+                if last_dialed_boy != None:
+                    print(f"The last boy you called was {last_dialed_boy.name}. His number was {last_dialed_boy.phonenum}.")
+                    clue_reveal(last_dialed_boy)
+
             if choice == 'reshuffle': reshuffle()
             if choice == 'shuffle': shuffle()
             if choice == 'count deck': count_deck()
