@@ -2,19 +2,10 @@ import random
 import copy
 import time
 from prettytable import PrettyTable    #this helps build BOY ATTRIBUTE TABLE
+import colorama #fixes windows shell color bugs
+from colorama import Fore, Back, Style #gives us come color options
 
-class color:            #Using a class of ascii colors to help spice things up
-   PURPLE = '\033[95m'
-   CYAN = '\033[96m'
-   DARKCYAN = '\033[36m'
-   BLUE = '\033[94m'
-   GREEN = '\033[92m'
-   YELLOW = '\033[93m'
-   RED = '\033[91m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
-   END = '\033[0m'
-   STRIKE = '\u0336'
+colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
     def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues):
@@ -61,12 +52,15 @@ c21 = Cards("Bob","5554884","Jim's Gym","Basketball","null","Glasses","",True)
 c22 = Cards("Carlos","5556668","Jim's Gym","Tennis","null","Hat","",True)
 c23 = Cards("Matt","5557557","Jim's Gym","Tennis","null","Glasses","",True)
 
+number_of_players = 1
 
 player1 = Player(1,[],False,"",[]) #sets player1 with no cards in hand
-player2 = Player(2,[],False,"",[]) #sets the variable player2
+player2 = Player(2,[],False,"",[])
+player3 = Player(3,[],False,"",[])
+player4 = Player(4,[],False,"",[])
 
-player_list=[player1,player2]
-#player_cycle = itertools.cycle(player_list)
+all_player_list=[player1,player2,player3,player4]
+player_list=[]
 
 ##global stuff##
 card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23]
@@ -76,6 +70,7 @@ card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck. Use game_deck when moving stuff around, use card_list as universal master ref)
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
+
 #functions
 
 #added some delay functions so i could tweak timings in one place
@@ -86,15 +81,12 @@ def short_delay():
 def long_delay():
     time.sleep(2)
 
-#strike is how i am crossing out entries in the BAT
-def strike(text):
-    result = ''
-    for c in text:
-        result = result + c + '\u0336'
-    return color.RED + result + color.END
+def red_out(text): #red_out is how i am crossing out entries in the BAT
+    return Back.RED + Fore.WHITE + text + Style.RESET_ALL
+def white_out(text): #red_out is how i am crossing out entries in the BAT
+    return Back.WHITE + Fore.BLACK + text + Style.RESET_ALL
 def boy_attribute_table():   #this is an automated notepad of the clues you have crossed off the list. player specific
-    # Specify the Column Names while initializing the Table
-    b_a_t = PrettyTable(["Called?", "Hangout", "Sport \ Food", "Clothing", "Secret Admirer?"])
+    b_a_t = PrettyTable(["Called?", "Hangout", "Sport \ Food", "Clothing", "Secret Admirer?"]) # Specify the Column Names while initializing the Table
     for i in card_list:   #iterates over all cards
         hangout = i.hangout
         sport = i.sport
@@ -102,17 +94,18 @@ def boy_attribute_table():   #this is an automated notepad of the clues you have
         clothing = i.clothing
         name = i.name
         listname = i.name
-        if i in whos_turn().collected_clues: name = strike(i.name) #strikes out a name you have dialed already in the "dialed" list
+        if i in whos_turn().collected_clues: name = red_out(i.name) #reds out a name you have dialed already in the "dialed" list
         for x in whos_turn().collected_clues: #iterates over all the clues the player has heard so far
-            if x.clue_to_reveal == i.sport: sport = strike(i.sport)
-            if x.clue_to_reveal == i.hangout: hangout = strike(i.hangout)
-            if x.clue_to_reveal == i.food: food = strike(i.food)
-            if x.clue_to_reveal == i.clothing: clothing = strike(i.clothing)   #if any of the clues collected fit in the category, it gets striked out
+            if x.clue_to_reveal == i.sport: sport = red_out(i.sport)
+            if x.clue_to_reveal == i.hangout: hangout = red_out(i.hangout)
+            if x.clue_to_reveal == i.food: food = red_out(i.food)
+            if x.clue_to_reveal == i.clothing: clothing = red_out(i.clothing)   #if any of the clues collected fit in the category, it gets redded out
         if i.sport == "null": sport = ""
         if i.food == "null": food = ""   #removing null entries for food sport weirdness
         b_a_t.add_row([name,hangout, sport+food, clothing, listname])   #adds rows qeued up for printing
     b_a_t.align="l"   #aligns the table to the left
     print(b_a_t)  #prints BAT
+    input("Press Enter to continue...")
 
 def new_game_crush():
     clue_list = []  # makes bucket to hold all valid clues in
@@ -133,77 +126,68 @@ def new_game_crush():
 
 def starting_deal():
     for i in range (3):
-        for i in range (len(player_list)):
-            player_list[i].cardsinhand.append(game_deck.pop(0))
+        for f in player_list:
+            f.cardsinhand.append(game_deck.pop(0))
+    if len(player_list) == 1: print()
     print("All Players have drawn 3 cards from the deck.")
 
-
 def whos_turn():
-    if player1.current_turn == True:
-        current_player = player1
-        return current_player
-    if player2.current_turn == True:
-        current_player = player2
-        return current_player
+    for i in player_list:
+        if i.current_turn == True:
+            current_player = i
+            return current_player
 
 def print_whos_turn():
-    if player1.current_turn == True:
-        current_player = player1
-        print("\nIt is",current_player.playername,"'s turn (Player 1).")
-        return current_player
-    if player2.current_turn == True:
-        current_player = player2
-        print("It is",current_player.playername,"'s turn (Player 2).")
-        return current_player
+    for i in player_list:
+        if i.current_turn == True:
+            current_player = i
+            print(f"\nIt is {current_player.playername}'s turn (Player {current_player.playernumber}).")
+            return current_player
 
+def set_number_of_players():
+    print("How many players would like to play (1 - 4)?")
+    while True:
+        num = input()
+        if num == "1" or "2" or "3" or "4":
+            print(f"you have selected {num} players.")
+            number_of_players = int(num)
+            for i in range(number_of_players):
+                player_list.append(all_player_list[i])
+                print
+            break
+    else: print("Invalid choice.")
 def name_players():
-    print("Please give Player 1 a name.")
-    name=input()
-    if name=="fast":
-        player1.playername = "Fasty 1"
-        player2.playername = "Fasty 2"
-        return
-    player1.playername=name
-    print("Please give Player 2 a name.")
-    name = input()
-    player2.playername = name
+    for i in player_list:
+        print(f"Please give Player {i.playernumber} a name.")
+        name = input()
+        i.playername = name
+
     print("The names you have chosen are:")
     short_delay()
-    print("Player", player1.playernumber, player1.playername)
-    short_delay()
-    print("Player", player2.playernumber, player2.playername)
-    short_delay()
+    for i in player_list:
+        print(f"Player {i.playernumber}, {i.playername}")
+        short_delay()
 
 def starting_player():
+    if len(player_list) == 1:  #checks for one player mode
+        for i in player_list:
+            i.current_turn = True
+            break
+        return
     while True:
-        if player1.playername != "Fasty 1":
-            print("Choose which player wants to start, 1 or 2?")
-            choice = input()
-        else: choice = "1"
+        print(f"Choose which player wants to start 1 to {len(player_list)}?")
+        choice = input()
         if choice:
+            if choice.lower() == "one": choice = 1
+            if choice.lower() == "two": choice = 2
+            if choice.lower() == "three": choice = 3
+            if choice.lower() == "four": choice = 4
             if choice.isdigit() == True:
-                if int(choice) == 1:
-                    player1.current_turn = True
-                    print("Player 1 will go first.")
-
-                    break
-                if int(choice) == 2:
-                    player2.current_turn = True
-                    print("Player 2 will go first.")
-
-                    break
-                else: print("Not a valid number.")
-
-            if choice.isdigit() == False:
-                if choice.lower() == "one":
-                    player1.current_turn=True
-                    print("Player One will go first.")
-                    break
-                if choice.lower() == "two":
-                    player2.current_turn = True
-                    print("Player Two will go first.")
-                    break
-                else: print("Not a valid word.")
+                for i in player_list:
+                    if int(choice) == i.playernumber:
+                        i.current_turn = True
+                        print(f"Player {i.playernumber} will go first.")
+                break
         else: print("Not a valid choice.")
 
 def print_current_player_hand():
@@ -212,9 +196,14 @@ def print_current_player_hand():
         print(str(i.name), "- Phone#:", (i.phonenum))
         short_delay()
 
-def call_number():
-    print("You pick up the phone to make a call. Please enter a number.")
+def call_number(choice):
     valid_call = ()
+    for i in whos_turn().cardsinhand:
+        if "dial" in choice and str(i.phonenum) in choice or "dial" in choice and str(i.name).lower() in choice:
+            print("alright alright alright")
+            last_dialed_boy = i
+            return last_dialed_boy
+    print("You pick up the phone to make a call. Please enter a number (or name).")
 
     while True:
         dialed_number=input()
@@ -222,7 +211,7 @@ def call_number():
             break
 
         for i in whos_turn().cardsinhand:
-            if dialed_number == i.phonenum:
+            if dialed_number == i.phonenum or dialed_number.lower() == i.name.lower():   #added name dial for Clarissa <3
                 for x in range(0,3):
                     print("ring")
                     short_delay()
@@ -237,6 +226,11 @@ def call_number():
             print("Wrong number. Try another number or dial ('leave') to exit.")
 
 def clue_reveal(last_dialed_boy):
+    try:
+        last_dialed_boy
+    except NameError:
+        last_dialed_boy = None
+    if last_dialed_boy == None: return
     #rejection check:
     if last_dialed_boy.clue_to_reveal == card_list[crush].hangout\
     or last_dialed_boy.clue_to_reveal == card_list[crush].sport\
@@ -274,16 +268,20 @@ def clue_reveal(last_dialed_boy):
     if last_dialed_boy.clue_to_reveal == "Hat" or "Jacket" or "Tie": grammar = "a"
     else: grammar = ""
 
-    if response == "hangout_reveal": print(f"but he doesn't hang out at {last_dialed_boy.clue_to_reveal}.")
-    if response == "sport_reveal": print(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}.")
-    if response == "food_reveal": print(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}.")
-    if response == "clothing_reveal": print(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}.")
+    if response == "hangout_reveal": print(white_out(f"but he doesn't hang out at {last_dialed_boy.clue_to_reveal}."))
+    if response == "sport_reveal": print(white_out(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}."))
+    if response == "food_reveal": print(white_out(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}."))
+    if response == "clothing_reveal": print(white_out(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}."))
     whos_turn().collected_clues.append(last_dialed_boy)
     last_dialed_boy.first_call = False  #this is where redial snark is set
+    choice = "dial"
+    print(choice,"test print within clue reveal")
     long_delay()
+    return choice
 
 def auto_discard(last_dialed_boy):
-    print(f"You have called {last_dialed_boy.name}. Do you need to redial before discarding?")
+    if number_of_players > 1:
+        print(f"{whos_turn().playername} called {last_dialed_boy.name}. Do you need to redial before discarding?")
 
 def end_turn():
     for i in range(len(player_list)):   #iterates over all index numbers in player list var
@@ -458,6 +456,7 @@ def game_loop():
     valid_choices=["bat","redial","dial","end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
     print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     delay()
+    set_number_of_players()
     name_players()
     delay()
     starting_player()
@@ -466,8 +465,15 @@ def game_loop():
     while True:
         print_whos_turn()
         print_current_player_hand()
-        print ("('look') - ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - ('more')")
+        print (Back.WHITE + Fore.BLACK + "Commands: ('dial') - ('bat') - ('end') - ('more')" + Style.RESET_ALL)
         choice = input().lower()
+
+        if 'dial' in choice:
+            last_dialed_boy = call_number(choice)
+            choice = clue_reveal(last_dialed_boy)
+            auto_discard(last_dialed_boy)
+            print(choice, "test print outside clue reveal in main loop")
+
         if choice not in valid_choices:
             print("Not a valid choice.\n")
         else:
@@ -502,10 +508,6 @@ def game_loop():
                 show_hand()
                 show_discard()
 
-            if choice == 'dial':
-                last_dialed_boy = call_number()
-                clue_reveal(last_dialed_boy)
-                auto_discard(last_dialed_boy)
             if choice == 'redial':
                 try: last_dialed_boy
                 except NameError: last_dialed_boy = None
@@ -526,7 +528,7 @@ def game_loop():
             if choice == 'end': end_turn()
 
             if choice == 'more':
-                print("You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
+                print("More commands: ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
 
 crush = new_game_crush()
 game_loop()
