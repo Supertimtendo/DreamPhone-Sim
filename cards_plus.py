@@ -4,6 +4,8 @@ import time
 from prettytable import PrettyTable    #this helps build BOY ATTRIBUTE TABLE
 import colorama #fixes windows shell color bugs
 from colorama import Fore, Back, Style #gives us come color options
+### installing colorama: pip install colorama
+### installing prettytable: python -m pip install -U prettytable
 
 colorama.init() #turns on windows shell fix
 
@@ -14,15 +16,16 @@ class Player:  #class Player constructor
         self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
         self.playername = playername        #gives players a name attribute in the class
         self.collected_clues = collected_clues #where the information goes that the player collects
-        self.dialed_this_turn = dialed_this_turn #a flag for limiting 1 move per turn
+        self.dialed_this_turn = dialed_this_turn #a flag for limiting 1 dial per turn
 
 player1 = Player(1,[],False,"",[],False)
 player2 = Player(2,[],False,"",[],False)
 player3 = Player(3,[],False,"",[],False)
 player4 = Player(4,[],False,"",[],False)
 
-all_player_list=[player1,player2,player3,player4]
-player_list=[]
+all_player_list=[player1,player2,player3,player4]  #all possible players in the game
+player_list=[]  #a list built out by the player's choice of player num
+crush=0  #initalizes game crush global var
 
 class Cards:  #class Cards constructor
     def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal, first_call):
@@ -36,30 +39,30 @@ class Cards:  #class Cards constructor
         self.first_call = first_call #a flag to show if the card has been dialed before
 
 #building Cards objects:
-c0 = Cards("Dave","5551111","Crosstown Mall","null","Cookies","Blue Jeans","",True)
-c1 = Cards("George","5551233","Crosstown Mall","null","Ice Cream","Tie","",True)
-c2 = Cards("Dale","5554566","Crosstown Mall","null","Ice Cream","Jacket","",True)
-c3 = Cards("Alan","5557899","Crosstown Mall","null","Cookies","Tie","",True)
-c4 = Cards("James","5552588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","",True)
-c5 = Cards("Phil","5553333","E.A.T.S. Snack Shop","null","Pizza","Glasses","",True)
-c6 = Cards("Bruce","5553699","E.A.T.S. Snack Shop","null","Pizza","Tie","",True)
-c7 = Cards("Tyler","5551477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","",True)
-c8 = Cards("Jamal","5559877","Reel Movies","null","Candy","Tie","",True)
-c9 = Cards("Gary","5553211","Reel Movies","null","Popcorn","Blue Jeans","",True)
-c10 = Cards("Dan","5557777","Reel Movies","null","Candy","Blue Jeans","",True)
-c11 = Cards("Spencer","5556544","Reel Movies","null","Popcorn","Jacket","",True)
-c12 = Cards("Mark","5558522","Woodland Park","Baseball","null","Hat","",True)
-c13 = Cards("Jason","5557411","Woodland Park","Baseball","null","Glasses","",True)
-c14 = Cards("Steve","5559999","Woodland Park","Skateboarding","null","Jacket","",True)
-c15 = Cards("John","5559633","Woodland Park","Skateboarding","null","Anything Yellow","",True)
-c16 = Cards("Paul","5555515","High Tide Beach","Volleyball","null","Anything Yellow","",True)
-c17 = Cards("Tony","5552442","High Tide Beach","Volleyball","null","Hat","",True)
-c18 = Cards("Wayne","5553535","High Tide Beach","Surfing","null","Anything Yellow","",True)
-c19 = Cards("Mike","5552226","High Tide Beach","Surfing","null","Hat","",True)
-c20 = Cards("Scott","5555599","Jim's Gym","Basketball","null","Anything Yellow","",True)
-c21 = Cards("Bob","5554884","Jim's Gym","Basketball","null","Glasses","",True)
-c22 = Cards("Carlos","5556668","Jim's Gym","Tennis","null","Hat","",True)
-c23 = Cards("Matt","5557557","Jim's Gym","Tennis","null","Glasses","",True)
+c0 = Cards("Dave","555-1111","Crosstown Mall","null","Cookies","Blue Jeans","",True)
+c1 = Cards("George","555-1233","Crosstown Mall","null","Ice Cream","Tie","",True)
+c2 = Cards("Dale","555-4566","Crosstown Mall","null","Ice Cream","Jacket","",True)
+c3 = Cards("Alan","555-7899","Crosstown Mall","null","Cookies","Tie","",True)
+c4 = Cards("James","555-2588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","",True)
+c5 = Cards("Phil","555-3333","E.A.T.S. Snack Shop","null","Pizza","Glasses","",True)
+c6 = Cards("Bruce","555-3699","E.A.T.S. Snack Shop","null","Pizza","Tie","",True)
+c7 = Cards("Tyler","555-1477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","",True)
+c8 = Cards("Jamal","555-9877","Reel Movies","null","Candy","Tie","",True)
+c9 = Cards("Gary","555-3211","Reel Movies","null","Popcorn","Blue Jeans","",True)
+c10 = Cards("Dan","555-7777","Reel Movies","null","Candy","Blue Jeans","",True)
+c11 = Cards("Spencer","555-6544","Reel Movies","null","Popcorn","Jacket","",True)
+c12 = Cards("Mark","555-8522","Woodland Park","Baseball","null","Hat","",True)
+c13 = Cards("Jason","555-7411","Woodland Park","Baseball","null","Glasses","",True)
+c14 = Cards("Steve","555-9999","Woodland Park","Skateboarding","null","Jacket","",True)
+c15 = Cards("John","555-9633","Woodland Park","Skateboarding","null","Anything Yellow","",True)
+c16 = Cards("Paul","555-5515","High Tide Beach","Volleyball","null","Anything Yellow","",True)
+c17 = Cards("Tony","555-2442","High Tide Beach","Volleyball","null","Hat","",True)
+c18 = Cards("Wayne","555-3535","High Tide Beach","Surfing","null","Anything Yellow","",True)
+c19 = Cards("Mike","555-2226","High Tide Beach","Surfing","null","Hat","",True)
+c20 = Cards("Scott","555-5599","Jim's Gym","Basketball","null","Anything Yellow","",True)
+c21 = Cards("Bob","555-4884","Jim's Gym","Basketball","null","Glasses","",True)
+c22 = Cards("Carlos","555-6668","Jim's Gym","Tennis","null","Hat","",True)
+c23 = Cards("Matt","555-7557","Jim's Gym","Tennis","null","Glasses","",True)
 
 ##global stuff##
 card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23]
@@ -81,13 +84,15 @@ def long_delay():
     time.sleep(1)
 
 #Some TEXT STYLE stuff
-def red_out(text): #red_out is how i am crossing out entries in the BAT
+def blue_out(text): #red_out is how i am crossing out entries in the notepad
+    return Back.LIGHTBLACK_EX + Fore.BLUE + text + Style.RESET_ALL
+def red_out(text): #red_out is how i am crossing out entries in the notepad
     return Back.RED + Fore.WHITE + text + Style.RESET_ALL
-def white_out(text): #red_out is how i am crossing out entries in the BAT
+def white_out(text): #red_out is how i am crossing out entries in the notepad
     return Back.WHITE + Fore.BLACK + text + Style.RESET_ALL
 
 def boy_attribute_table():   #this is an automated notepad of the clues you have crossed off the list. player specific
-    b_a_t = PrettyTable(["Called?", "Hangout", "Sport \ Food", "Clothing", "Secret Admirer?"]) # Specify the Column Names while initializing the Table
+    notepad = PrettyTable(["Called?", "Hangout", "Sport \ Food", "Clothing", "Secret Admirer?"]) # Specify the Column Names while initializing the Table
     for i in card_list:   #iterates over all cards
         hangout = i.hangout
         sport = i.sport
@@ -103,15 +108,14 @@ def boy_attribute_table():   #this is an automated notepad of the clues you have
             if x.clue_to_reveal == i.clothing: clothing = red_out(i.clothing)   #if any of the clues collected fit in the category, it gets redded out
         if i.sport == "null": sport = ""
         if i.food == "null": food = ""   #removing null entries for food sport weirdness
-        b_a_t.add_row([name,hangout, sport+food, clothing, listname])   #adds rows qeued up for printing
-    b_a_t.align="l"   #aligns the table to the left
-    print(b_a_t)  #prints BAT
+        notepad.add_row([name,hangout, sport+food, clothing, listname])   #adds rows qeued up for printing
+    notepad.align="l"   #aligns the table to the left
+    print(notepad)  #prints notepad
     input("Press Enter to continue...")
 
 def new_game_crush():
     clue_list = []  # makes bucket to hold all valid clues in
     crush = random.randint(0, int(len(card_list)-1)) #rng a boy from the card list to be the crush, adjusting len from starting at 1 while list index starts at 0
-
     for i in range (len(card_list)):   #creates a list of all possible clues in clue_list, removing "null" entries for foodsport wierdness
         if card_list[i].hangout != "null": clue_list.append(card_list[i].hangout)
         if card_list[i].sport != "null": clue_list.append(card_list[i].sport)
@@ -132,6 +136,9 @@ def starting_deal():
     if len(player_list) == 1: print()
     print("All Players have drawn 3 cards from the deck.")
 
+def check_decks():
+    if len(game_deck) == 0: reshuffle()
+
 def whos_turn():
     for i in player_list:
         if i.current_turn == True:
@@ -142,7 +149,7 @@ def print_whos_turn():
     for i in player_list:
         if i.current_turn == True:
             current_player = i
-            print(f"\nIt is {current_player.playername}'s turn (Player {current_player.playernumber}).")
+            print(f"\nIt is {current_player.playername}'s turn (Player {current_player.playernumber}).\n")
             return current_player
 
 def set_number_of_players():
@@ -198,13 +205,9 @@ def print_current_player_hand():
         short_delay()
 
 def call_number(choice):
-    current_player = whos_turn()
-    print(current_player.playername,"testing dialed this turn filter")
-    print(current_player.dialed_this_turn, "testing dialed this turn filter")
-
-    if current_player.dialed_this_turn == False:
+    if whos_turn().dialed_this_turn == False:
         valid_call = ()   #initalizes valid call var
-        for i in current_player.cardsinhand:   #this checks if dial "boyname" or dial "phonenum" was entered
+        for i in whos_turn().cardsinhand:   #this checks if dial "boyname" or dial "phonenum" was entered
             if "dial" in choice and str(i.phonenum) in choice or "dial" in choice and str(i.name).lower() in choice:
                 last_dialed_boy = i
                 return last_dialed_boy
@@ -225,14 +228,13 @@ def call_number(choice):
                     last_dialed_boy = i
                     valid_call = True
 
-            if valid_call is True:
+            if valid_call is True and len(player_list) > 1:
                 whos_turn().dialed_this_turn = True
                 return last_dialed_boy
 
             if valid_call is not True:
                 print("Wrong number. Try another number or dial ('leave') to exit.")
     else: print("Cannot dial twice in a single turn.")
-
 def clue_reveal(last_dialed_boy):
     try:
         last_dialed_boy
@@ -258,16 +260,16 @@ def clue_reveal(last_dialed_boy):
     #redial modifier in card class
 
     if last_dialed_boy.first_call == True:   #checks if this is your first time calling them
-        print(f"Hello? This is {last_dialed_boy.name}. You want to know about your crush?")
+        print(blue_out(f"Hello? This is {last_dialed_boy.name}. You want to know about your crush?"))
         long_delay()
     if last_dialed_boy.first_call == False:   #if not first time, increase snark
-        print("You again? I already told you...")
+        print(blue_out("You again? I already told you..."))
         long_delay()
     #loud repsonses, everyone hears
-    if response == "hangout_reveal": print("I know where he hangs out,")
-    if response == "sport_reveal": print("He is very athletic,")
-    if response == "food_reveal": print("He eats a lot of food,")
-    if response == "clothing_reveal": print("He looks good in whatever he wears,")
+    if response == "hangout_reveal": print(blue_out("I know where he hangs out,"))
+    if response == "sport_reveal": print(blue_out("He is very athletic,"))
+    if response == "food_reveal": print(blue_out("He eats a lot of food,"))
+    if response == "clothing_reveal": print(blue_out("He looks good in whatever he wears,"))
     long_delay()
 
 
@@ -276,25 +278,29 @@ def clue_reveal(last_dialed_boy):
     if last_dialed_boy.clue_to_reveal == "Hat" or "Jacket" or "Tie": grammar = "a"
     else: grammar = ""
 
-    if response == "hangout_reveal": print(white_out(f"but he doesn't hang out at {last_dialed_boy.clue_to_reveal}."))
-    if response == "sport_reveal": print(white_out(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}."))
-    if response == "food_reveal": print(white_out(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}."))
-    if response == "clothing_reveal": print(white_out(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}."))
+    if response == "hangout_reveal": print(red_out(f"but he doesn't hang out at {last_dialed_boy.clue_to_reveal}."), "\n")
+    if response == "sport_reveal": print(red_out(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
+    if response == "food_reveal": print(red_out(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
+    if response == "clothing_reveal": print(red_out(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
     whos_turn().collected_clues.append(last_dialed_boy)
     last_dialed_boy.first_call = False  #this is where redial snark is set
-    choice = "dial"
+    choice = "null"
     long_delay()
     return choice
 
 def dialed_discard(last_dialed_boy):
-    if current_player.dialed_this_turn == True:
+    if whos_turn().dialed_this_turn == False:
         i = whos_turn().cardsinhand.index(last_dialed_boy)
-        print(f"{last_dialed_boy.name} from your hand has been discarded.")
+        print(f"{last_dialed_boy.name} from your hand has been discarded.\nHis clue information has been added to your Notepad.\n")
         discard_pile.append(whos_turn().cardsinhand.pop(i))  # adds card to discard pile based on in_hand index num
+        if len(player_list) > 1: whos_turn().dialed_this_turn = True
 
 def dialed_draw():
-    whos_turn().cardsinhand.append(game_deck.pop(0))
-    print(whos_turn().playername, "drew a card.")
+    if len(whos_turn().cardsinhand) < 3:
+        whos_turn().cardsinhand.append(game_deck.pop(0))
+        print(whos_turn().playername, "drew a card.")
+        choice = "null"
+        return choice
 
 def end_turn(number_of_players):
     current_player = whos_turn()
@@ -317,9 +323,38 @@ def end_turn(number_of_players):
         for i in card_list:     #Reset redial flag when players swap
             i.first_call = True
 
+def count():
+    #print("====Status====\nDraw Deck:",len(game_deck),"\nHand:",len(in_hand),"\nDiscard:",len(discard_pile),"\n")
+    print(f"\n====Status====")
+    short_delay()
+    print(f"Draw Pile: {len(game_deck)}")
+    short_delay()
+    print(f"{whos_turn().playername}'s Hand: {len(whos_turn().cardsinhand)}")
+    short_delay()
+    print(f"Discard Pile: {len(discard_pile)}")
+    short_delay()
+
+def solve(crush):
+    print("You think you know who your crush is, huh?\nType your guess to check (name or phone#).\nYou can also look at your notebook by entering ('notebook').")
+    crush_object = card_list[crush]
+    valid_solve_input = False
+    print(crush_object.name)
+    while True:
+        solve_choice = input()
+        for i in card_list:
+            if solve_choice.lower() == i.phonenum or i.name.lower():
+                valid_solve_input = True
+            else: print("invalid input. Try again or type ('exit') to leave.")
+            if solve_choice == 'exit': break
+        if valid_solve_input == True:
+            if solve_choice == crush_object.phonenum or crush_object.name.lower():
+                print("okay")
+            else:
+                print("nope")
+
 def shuffle():  # shuffles the game deck
     random.shuffle(game_deck)
-    print("\nCards in the game deck have been shuffled. \n")
+    print("\nCards in the game deck have been shuffled. ")
     delay()
 
 def reshuffle():
@@ -329,12 +364,14 @@ def reshuffle():
         for i in range(len(discard_pile)): #does an i loop based on the number of items in the discard pile
             game_deck.append(discard_pile.pop(0)) #adds the discard pile back into the game deck
         random.shuffle(game_deck)
-        print("The discard pile has been shuffled back to the draw pile.\n")
+        print("/n",blue_out("The discard pile has been shuffled back to the draw pile."),"\n")
 
 # now on to the main loop. it simply checks for inputs to run the outlined functions. nothing too crazy
 
 def game_loop():
-    valid_choices=["bat","redial","dial","end","look","shuffle","draw","discard","discard choice","reshuffle","count","show","count deck","count hand","count discard","show deck","show hand","show discard","more"]
+    crush = new_game_crush()
+    print(card_list[crush].name)
+    valid_choices=["null","notepad","dial","end","count","redial","solve"]
     print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     delay()
     number_of_players = set_number_of_players()
@@ -346,21 +383,23 @@ def game_loop():
     while True:
         print_whos_turn()
         print_current_player_hand()
-        print (Back.WHITE + Fore.BLACK + "Commands: ('dial') - ('bat') - ('end') - ('more')" + Style.RESET_ALL)
+        check_decks()
+        print (white_out("Commands: ('dial') - ('notepad') - ('end') - ('more')"),"\n")
         choice = input().lower()
 
-        if 'dial' in choice:
+        if 'dial' in choice and choice != 'redial':
             last_dialed_boy = call_number(choice)
             choice = clue_reveal(last_dialed_boy)
             dialed_discard(last_dialed_boy)
-            dialed_draw()
+            choice = dialed_draw()
             #end_turn(number_of_players)
 
 
         if choice not in valid_choices:
-            print("Not a valid choice.\n")
+            print("Not a valid choice.")
 
         else:
+            if choice == 'solve': solve(crush)
             if choice == 'draw':
                 print("how many cards would you like to draw?")
                 num_count = ask_for_num()
@@ -380,10 +419,8 @@ def game_loop():
             if choice == 'discard choice':
                 discard_choice()
 
-            if choice == 'count':
-                count_deck()
-                count_hand()
-                count_discard()
+            if choice == 'count':count()
+
 
             if choice == 'show':
                 show_deck()
@@ -397,7 +434,8 @@ def game_loop():
                 if last_dialed_boy != None:
                     print(f"The last boy you called was {last_dialed_boy.name}. His number was {last_dialed_boy.phonenum}.")
                     clue_reveal(last_dialed_boy)
-            if choice == 'bat': boy_attribute_table()
+
+            if choice == 'notepad': boy_attribute_table()
             if choice == 'reshuffle': reshuffle()
             if choice == 'shuffle': shuffle()
             if choice == 'count deck': count_deck()
@@ -407,12 +445,12 @@ def game_loop():
             if choice == 'show hand': show_hand()
             if choice == 'show discard': show_discard()
             if choice == 'look': look()
-            if choice == 'end': end_turn()
+            if choice == 'end': end_turn(number_of_players)
 
             if choice == 'more':
                 print("More commands: ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
 
-crush = new_game_crush()
+
 game_loop()
 #boy_attribute_table()
 
@@ -450,16 +488,7 @@ def call_number(choice):
 
         if valid_call is not True:
             print("Wrong number. Try another number or dial ('leave') to exit.")
-def count():
-    #print("====Status====\nDraw Deck:",len(game_deck),"\nHand:",len(in_hand),"\nDiscard:",len(discard_pile),"\n")
-    print(f"\n====Status====")
-    short_delay()
-    print(f"Draw Deck: {len(game_deck)}")
-    short_delay()
-    print(f"{whos_turn().playername}'s Hand: {len(whos_turn().cardsinhand)}")
-    short_delay()
-    print(f"Discard: {len(discard_pile)}")
-    short_delay()
+
 def look():
     if len(whos_turn().cardsinhand) == 0:
         print("There are no cards in your hand.\n")
