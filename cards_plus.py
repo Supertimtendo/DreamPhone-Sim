@@ -10,18 +10,19 @@ from colorama import Fore, Back, Style #gives us come color options
 colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
-    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn):
+    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn,guessed_this_turn):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
         self.cardsinhand = cardsinhand      #Class Player gets a "cardsinhand" attribute
         self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
         self.playername = playername        #gives players a name attribute in the class
         self.collected_clues = collected_clues #where the information goes that the player collects
         self.dialed_this_turn = dialed_this_turn #a flag for limiting 1 dial per turn
+        self.guessed_this_turn = guessed_this_turn #only one guess per turn flag
 
-player1 = Player(1,[],False,"",[],False)
-player2 = Player(2,[],False,"",[],False)
-player3 = Player(3,[],False,"",[],False)
-player4 = Player(4,[],False,"",[],False)
+player1 = Player(1,[],False,"",[],False,False)
+player2 = Player(2,[],False,"",[],False,False)
+player3 = Player(3,[],False,"",[],False,False)
+player4 = Player(4,[],False,"",[],False,False)
 
 all_player_list=[player1,player2,player3,player4]  #all possible players in the game
 player_list=[]  #a list built out by the player's choice of player num
@@ -303,7 +304,6 @@ def dialed_draw():
         return choice
 
 def end_turn(number_of_players):
-    current_player = whos_turn()
     if number_of_players > 1:
         for i in range(len(player_list)):   #iterates over all index numbers in player list var
             if player_list[i] == whos_turn():   #if i is the index number of the item matching current player:
@@ -315,7 +315,8 @@ def end_turn(number_of_players):
         print("Ending", whos_turn().playername, "'s turn.")
         delay()
         whos_turn().current_turn = False    #turns off current player turn flag
-        current_player.dialed_this_turn = False #allows this player to dial again next turn
+        whos_turn().dialed_this_turn = False #allows this player to dial again next turn
+        whos_turn().guessed_this_turn = False #allows player ending turn to guess next turn
         print("next player up:",player_list[next_player_num].playername)
         delay()
         player_list[next_player_num].current_turn = True    #turns on next player turn flag
@@ -334,23 +335,38 @@ def count():
     print(f"Discard Pile: {len(discard_pile)}")
     short_delay()
 
-def solve(crush):
+def solve(crush, number_of_players):
+    if whos_turn().guessed_this_turn == True:
+        print("You cannot guess more than once per turn.")
+        return
     print("You think you know who your crush is, huh?\nType your guess to check (name or phone#).\nYou can also look at your notebook by entering ('notebook').")
     crush_object = card_list[crush]
     valid_solve_input = False
     print(crush_object.name)
     while True:
-        solve_choice = input()
+        solve_choice = input().lower()
         for i in card_list:
-            if solve_choice.lower() == i.phonenum or i.name.lower():
-                valid_solve_input = True
-            else: print("invalid input. Try again or type ('exit') to leave.")
-            if solve_choice == 'exit': break
-        if valid_solve_input == True:
-            if solve_choice == crush_object.phonenum or crush_object.name.lower():
-                print("okay")
-            else:
-                print("nope")
+            if solve_choice == crush_object.phonenum or solve_choice == crush_object.name.lower():
+                result = "crush"
+                break
+            if solve_choice == i.phonenum or solve_choice == i.name.lower():
+                result = "valid"
+                break
+            else: result = "invalid"
+        if result == "invalid": print("invalid input. Try again.")
+        if result == "crush":
+            long_delay()
+            print(f"{crush_object.name} is your crush!\n")
+            long_delay()
+            print("Game over! but not really i'm still working on the program.")
+            long_delay()
+            long_delay()
+            if number_of_players > 1: whos_turn().guessed_this_turn = True
+            return
+        if result == "valid":
+            print("Wrong boy, try again!")
+            if number_of_players > 1: whos_turn().guessed_this_turn = True
+            return
 
 def shuffle():  # shuffles the game deck
     random.shuffle(game_deck)
@@ -399,7 +415,7 @@ def game_loop():
             print("Not a valid choice.")
 
         else:
-            if choice == 'solve': solve(crush)
+            if choice == 'solve': solve(crush, number_of_players)
             if choice == 'draw':
                 print("how many cards would you like to draw?")
                 num_count = ask_for_num()
