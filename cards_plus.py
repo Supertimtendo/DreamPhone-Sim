@@ -10,7 +10,7 @@ from colorama import Fore, Back, Style #gives us come color options
 colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
-    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn,guessed_this_turn):
+    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn, guessed_this_turn):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
         self.cardsinhand = cardsinhand      #Class Player gets a "cardsinhand" attribute
         self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
@@ -304,6 +304,8 @@ def dialed_draw():
         return choice
 
 def end_turn(number_of_players):
+    former_player = whos_turn()  #once whos_turn().current_turn is false, it breaks function call, need to get the iteration
+                                # of the player cuurrently to make dialed this turn and guess this turn work
     if number_of_players > 1:
         for i in range(len(player_list)):   #iterates over all index numbers in player list var
             if player_list[i] == whos_turn():   #if i is the index number of the item matching current player:
@@ -315,8 +317,8 @@ def end_turn(number_of_players):
         print("Ending", whos_turn().playername, "'s turn.")
         delay()
         whos_turn().current_turn = False    #turns off current player turn flag
-        whos_turn().dialed_this_turn = False #allows this player to dial again next turn
-        whos_turn().guessed_this_turn = False #allows player ending turn to guess next turn
+        former_player.dialed_this_turn = False #allows this player to dial again next turn
+        former_player.guessed_this_turn = False #allows player ending turn to guess next turn
         print("next player up:",player_list[next_player_num].playername)
         delay()
         player_list[next_player_num].current_turn = True    #turns on next player turn flag
