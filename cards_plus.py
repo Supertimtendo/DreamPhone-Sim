@@ -10,7 +10,7 @@ from colorama import Fore, Back, Style #gives us come color options
 colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
-    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn, guessed_this_turn):
+    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn, guessed_this_turn, pvp_in_hand):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
         self.cardsinhand = cardsinhand      #Class Player gets a "cardsinhand" attribute
         self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
@@ -18,11 +18,12 @@ class Player:  #class Player constructor
         self.collected_clues = collected_clues #where the information goes that the player collects
         self.dialed_this_turn = dialed_this_turn #a flag for limiting 1 dial per turn
         self.guessed_this_turn = guessed_this_turn #only one guess per turn flag
+        self.pvp_in_hand = pvp_in_hand
 
-player1 = Player(1,[],False,"",[],False,False)
-player2 = Player(2,[],False,"",[],False,False)
-player3 = Player(3,[],False,"",[],False,False)
-player4 = Player(4,[],False,"",[],False,False)
+player1 = Player(1,[],False,"",[],False,False,[])
+player2 = Player(2,[],False,"",[],False,False,[])
+player3 = Player(3,[],False,"",[],False,False,[])
+player4 = Player(4,[],False,"",[],False,False,[])
 
 all_player_list=[player1,player2,player3,player4]  #all possible players in the game
 player_list=[]  #a list built out by the player's choice of player num
@@ -69,6 +70,28 @@ c23 = Cards("Matt","555-7557","Jim's Gym","Tennis","null","Glasses","",True)
 card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23]
 # this is the master list of cards in the deck. a way to reference a var list containing all card object names.
 # tried to find a less brute force way to do this but so far no luck.
+
+class Pvp_Cards:  #builds Pvp_Cards class
+    def __init__(self, type, player_owner, used_on, long_name):
+        self.type = type    #Mom says hang up. share a secret, speakerphone.
+        self.player_owner = player_owner  #who played the card
+        self.used_on = used_on #what Card the Pvp_Card was used on
+        self.long_name = long_name #a way to not have to type shit every time
+
+pvp0 = Pvp_Cards("hangup",player1,[],"Mom Says Hang up!")
+pvp1 = Pvp_Cards("hangup",player2,[],"Mom Says Hang up!")
+pvp2 = Pvp_Cards("hangup",player3,[],"Mom Says Hang up!")
+pvp3 = Pvp_Cards("hangup",player4,[],"Mom Says Hang up!")
+pvp4 = Pvp_Cards("share_secret",player1,[],"Share a Secret")
+pvp5 = Pvp_Cards("share_secret",player2,[],"Share a Secret")
+pvp6 = Pvp_Cards("share_secret",player3,[],"Share a Secret")
+pvp7 = Pvp_Cards("share_secret",player4,[],"Share a Secret")
+pvp8 = Pvp_Cards("speakerphone",player1,[],"Speakerphone")
+pvp9 = Pvp_Cards("speakerphone",player2,[],"Speakerphone")
+pvp10 = Pvp_Cards("speakerphone",player3,[],"Speakerphone")
+pvp11 = Pvp_Cards("speakerphone",player4,[],"Speakerphone")
+
+pvp_list = [pvp0,pvp1,pvp2,pvp3,pvp4,pvp5,pvp6,pvp7,pvp8,pvp9,pvp10,pvp11]
 
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck. Use game_deck when moving stuff around, use card_list as universal master ref)
 in_hand = []  # initializes player hand as empty
@@ -131,11 +154,19 @@ def new_game_crush():
     return crush
 
 def starting_deal():
-    for i in range (3):
+    for i in range (3): #gives players 3 deck cards
         for f in player_list:
             f.cardsinhand.append(game_deck.pop(0))
-    if len(player_list) == 1: print()
-    print("All Players have drawn 3 cards from the deck.")
+    if len(player_list) == 1: print("Single Player Mode. PvP Cards Disabled.\nYou have drawn 3 cards from the deck.")
+    if len(player_list) > 1:
+        for p in pvp_list:  #gives players pvp cards
+            if p.player_owner == player1: player1.pvp_in_hand.append(p)
+            if p.player_owner == player2: player2.pvp_in_hand.append(p)
+            if p.player_owner == player3: player3.pvp_in_hand.append(p)
+            if p.player_owner == player4: player4.pvp_in_hand.append(p)
+        print("All Players have drawn 3 boy cards from the deck,\nand have 3 PvP cards in hand.")
+
+
 
 def check_decks():
     if len(game_deck) == 0: reshuffle()
@@ -156,15 +187,19 @@ def print_whos_turn():
 def set_number_of_players():
     print("How many players would like to play (1 - 4)?")
     while True:
-        num = input()
-        if num == "1" or "2" or "3" or "4":
-            print(f"you have selected {num} players.")
+        try:
+            num = int(input())
+            if num == 1: print("You have selected 1 player.")
+            if num in range(2,4): print(f"You have selected {num} players.")  # grammar motherfuckers!
             number_of_players = int(num)
             for i in range(number_of_players):
                 player_list.append(all_player_list[i])
-                print
             return number_of_players
-    else: print("Invalid choice.")
+        except: print("Please enter ('1','2','3' or '4') to select number of players.")
+
+
+
+
 def name_players():
     for i in player_list:
         print(f"Please give Player {i.playernumber} a name.")
@@ -204,6 +239,55 @@ def print_current_player_hand():
     for i in whos_turn().cardsinhand:
         print(str(i.name), "- Phone#:", (i.phonenum))
         short_delay()
+    print("PvP:",end=" ")
+    for i in whos_turn().pvp_in_hand:
+        print(f"|{i.long_name}|",end=" ")
+    print(end="\n")
+
+def use_pvp():
+    if len(player_list) > 1:   #checks for 2 or more player game
+        if len(whos_turn().pvp_in_hand) != 0:  #checks that hand is not empty
+            print("Please select a PvP card to use.")
+            for i in whos_turn().pvp_in_hand:
+                print(f"{whos_turn().pvp_in_hand.index(i)} - {i.long_name}")
+
+            while True:
+                try:
+                    choice = int(input())
+                    for i in whos_turn().pvp_in_hand:
+                        if choice == int(whos_turn().pvp_in_hand.index(i)):
+                            selected_pvp = whos_turn().pvp_in_hand[choice]
+                            print("You chose",selected_pvp.long_name,"\n")
+                    break
+                except: print("Invalid choice.")
+
+        print(f"Choose a player to curse with {selected_pvp.long_name}.")
+        opponent_list = copy.copy(player_list)
+        opponent_list.remove(whos_turn())
+        for i in opponent_list: print(i.playernumber,"-",i.playername)
+
+        for i in opponent_list:
+            while True:
+                try:
+                    choice = input()
+                    if choice.isnumeric() == True:
+                        if int(choice) == int(i.playernumber):
+                            selected_player = i
+                            break
+                        else: print("Invalid Number.")
+                    else:
+                        if choice.lower() == str(i.playername.lower()):
+                            selected_player = i
+                            break
+                        else: print("Invalid name.")
+                except: print("Not a valid player choice.")
+
+        print(f"You have selected {selected_player.playername}.")
+        print(f"Select a card of {selected_player.playername}'s to curse.")
+        for i in selected_player.cardsinhand:
+            print (selected_player.cardsinhand.index(i), i.name)
+
+
 
 def call_number(choice):
     if whos_turn().dialed_this_turn == False:
@@ -327,7 +411,6 @@ def end_turn(number_of_players):
             i.first_call = True
 
 def count():
-    #print("====Status====\nDraw Deck:",len(game_deck),"\nHand:",len(in_hand),"\nDiscard:",len(discard_pile),"\n")
     print(f"\n====Status====")
     short_delay()
     print(f"Draw Pile: {len(game_deck)}")
@@ -344,7 +427,6 @@ def solve(crush, number_of_players):
     print("You think you know who your crush is, huh?\nType your guess to check (name or phone#).\nYou can also look at your notebook by entering ('notebook').")
     crush_object = card_list[crush]
     valid_solve_input = False
-    print(crush_object.name)
     while True:
         solve_choice = input().lower()
         for i in card_list:
@@ -388,8 +470,7 @@ def reshuffle():
 
 def game_loop():
     crush = new_game_crush()
-    print(card_list[crush].name)
-    valid_choices=["null","notepad","dial","end","count","redial","solve"]
+    valid_choices=["null","notepad","dial","end","count","redial","solve", "pvp"] # commands that work at start
     print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
     delay()
     number_of_players = set_number_of_players()
@@ -402,7 +483,7 @@ def game_loop():
         print_whos_turn()
         print_current_player_hand()
         check_decks()
-        print (white_out("Commands: ('dial') - ('notepad') - ('end') - ('more')"),"\n")
+        print (white_out("Commands: ('dial') - ('notepad') - ('pvp') - ('solve') - ('redial) - ('end')"),"\n")
         choice = input().lower()
 
         if 'dial' in choice and choice != 'redial':
@@ -410,41 +491,18 @@ def game_loop():
             choice = clue_reveal(last_dialed_boy)
             dialed_discard(last_dialed_boy)
             choice = dialed_draw()
-            #end_turn(number_of_players)
-
 
         if choice not in valid_choices:
             print("Not a valid choice.")
 
         else:
             if choice == 'solve': solve(crush, number_of_players)
-            if choice == 'draw':
-                print("how many cards would you like to draw?")
-                num_count = ask_for_num()
-                if num_count == "back" or 0:
-                    continue
-                else:
-                    draw(num_count)
-
-            if choice == 'discard':
-                print("how many cards would you like to discard?")
-                num_count = ask_for_num()
-                if num_count == 'back' or num_count == '0':
-                    continue
-                else:
-                    discard(num_count)
-
-            if choice == 'discard choice':
-                discard_choice()
-
             if choice == 'count':count()
-
-
+            if choice == 'pvp': use_pvp()
             if choice == 'show':
                 show_deck()
                 show_hand()
                 show_discard()
-
             if choice == 'redial':
                 try: last_dialed_boy
                 except NameError: last_dialed_boy = None
@@ -452,170 +510,7 @@ def game_loop():
                 if last_dialed_boy != None:
                     print(f"The last boy you called was {last_dialed_boy.name}. His number was {last_dialed_boy.phonenum}.")
                     clue_reveal(last_dialed_boy)
-
             if choice == 'notepad': boy_attribute_table()
-            if choice == 'reshuffle': reshuffle()
-            if choice == 'shuffle': shuffle()
-            if choice == 'count deck': count_deck()
-            if choice == 'count hand': count_hand()
-            if choice == 'count discard': count_discard()
-            if choice == 'show deck': show_deck()
-            if choice == 'show hand': show_hand()
-            if choice == 'show discard': show_discard()
-            if choice == 'look': look()
             if choice == 'end': end_turn(number_of_players)
 
-            if choice == 'more':
-                print("More commands: ('shuffle') - ('draw') - ('discard') - ('end') - ('discard choice') - ('reshuffle') - You can type 'show' or 'count' to show or count your hand, draw pile and discard pile. Using 'show' or 'count' plus 'hand', 'deck' or 'discard' will display or count the individual respective stacks.")
-
-
 game_loop()
-#boy_attribute_table()
-
-# I need to figure out how I want to do loud / quiet stuff with the text parser - might not be possible? focus on single player? / make pico dreamphone? I think i should
-# at least program the effect -"this part is quiet", "this part is loud" to practice the logic before i get sound involved. need to take recordings of dreamphone repsonses - maybe move project
-# to a website to act as phone (use a cellphone) and use real feelie cards /etc... i dunno hitting a logistical wall
-
-###moving outdated functions down here###
-#the following stuff is just to give some text feedback in the test program, not too interesting.
-def call_number(choice):
-    valid_call = ()   #initalizes valid call var
-    for i in whos_turn().cardsinhand:   #this checks if dial "boyname" or dial "phonenum" was entered
-        if "dial" in choice and str(i.phonenum) in choice or "dial" in choice and str(i.name).lower() in choice:
-            last_dialed_boy = i
-            return last_dialed_boy
-
-    print("You pick up the phone to make a call. Please enter a number (or name).")  #get message if dial + nothing useful is entered
-
-    while True:
-        dialed_number=input()   #prompts a second input loop to get a valid person to call
-        if dialed_number == "leave":
-            break
-
-        for i in whos_turn().cardsinhand:
-            if dialed_number == i.phonenum or dialed_number.lower() == i.name.lower():   #added name dial for Clarissa <3
-                for x in range(0,3):
-                    print("ring")
-                    short_delay()
-                delay()
-                last_dialed_boy = i
-                valid_call = True
-
-        if valid_call is True:
-            return last_dialed_boy
-
-        if valid_call is not True:
-            print("Wrong number. Try another number or dial ('leave') to exit.")
-
-def look():
-    if len(whos_turn().cardsinhand) == 0:
-        print("There are no cards in your hand.\n")
-    else:
-        print(whos_turn().playername,"looks closely at the cards in their hand.")
-        for i in whos_turn().cardsinhand:
-            print(str(i.name),"- Phone#:",(i.phonenum))
-            short_delay()
-    delay
-def show_deck():
-    if len(game_deck) == 0:
-        print ("There are no cards in the draw deck.\n")
-    else:
-        print("The cards in the deck are:")
-        for i in game_deck: print(i.name)
-def count_deck():
-    if len(game_deck) == 0:
-        print ("There are no cards in the draw deck.\n")
-    else:
-        print("The number of cards in the draw deck are:", len(game_deck))
-def show_hand():
-    if len(whos_turn().cardsinhand) == 0:
-        print("There are no cards in your hand.\n")
-    else:
-        print("Cards in", whos_turn().playername, "'s hand are:")
-        for i in whos_turn().cardsinhand:
-            print (i.name)
-            short_delay()
-    for i in whos_turn().collected_clues:
-        print ("clues you got:", i.name)
-def show_discard():
-    if len(discard_pile) == 0:
-        print ("There are no cards in the discard pile.\n")
-    else:
-        print("The cards in the discard pile are:")
-        for i in discard_pile: print(i.name)
-def count_hand():
-    if len(whos_turn().cardsinhand) == 0:
-        print ("There are no cards in your hand.\n")
-    else:
-        print("number of cards in your hand are:", len(whos_turn().cardsinhand))
-def count_discard():
-    if len(discard_pile) == 0:
-        print ("There are no cards in the discard pile.\n")
-        delay()
-    else:
-        print("number of cards in the discard pile:", len(discard_pile))
-        delay()
-def discard_choice():
-    loop = 1
-    while loop == 1:
-        if len(whos_turn().cardsinhand) == 0:  # check that your hand is not empty
-            print("you have no cards to discard.")
-            delay()
-            break
-        else:
-            show_hand()
-            print("Please choose the card you wish to discard, or type 'back' to leave.")
-            card_choice = input().lower() #which card do you want to discard?
-            if card_choice == 'back': #gives a way to back out of the discard choice loop
-                print("Exiting discard choice...")
-                break #leaves discard choice loop
-            else:
-                for i in range(len(whos_turn().cardsinhand)):  #runs through the list count of in_hand
-                    if card_choice == (whos_turn().cardsinhand[i].name.lower()): #checks if choice is in your hand
-                        print(whos_turn().cardsinhand[i].name,"from your hand has been discarded.")
-                        discard_pile.append(whos_turn().cardsinhand.pop(i)) #adds card to discard pile based on in_hand index num
-                        loop = 0
-                        delay()
-                        break
-                else: #if not 0 cards and if not a in_hand[i].name, incorrect choice
-                    print ("Incorrect choice.")
-def draw(num_count):  # function to move cards from the game deck into your hand
-    if len(game_deck) == 0: #checks for an empty draw deck and displays an error if you draw from it
-        print("Cannot draw any cards, the deck is empty.\n")
-    else:
-        if int(len(game_deck)) < num_count: #checks that you aren't trying to draw more cards than exist in the deck
-            print("You can't draw more cards than the deck contains.\n")
-        else:
-            print(whos_turn().playername, "drew", num_count, "cards.")
-            for i in range(num_count):  # I counts the number of draw_count specified
-                whos_turn().cardsinhand.append(game_deck.pop(0))
-    show_hand()
-def discard(num_count):
-    if len(whos_turn().cardsinhand) == 0:  # check that your hand is not empty
-        print("you have no cards to discard.")
-        delay()
-    else:
-        if int(len(whos_turn().cardsinhand)) < num_count: #checks that you aren't trying to discard more cards than are in your hand
-            print("You cannot discard more cards than you have in hand.")
-        else:
-            print("You are discarding", num_count, "cards.")
-            for i in range(num_count):  # i counts the number of discard_count specified
-                discard_pile.append(whos_turn().cardsinhand.pop(i)) #moves in hand card to discard pile
-def ask_for_num():
-    print("Type 'back' or '0' to leave.")
-    while True: #starts the loop
-        i = input() #asks for player input
-        if i: #this is a trick to validate against null entires (accidentally hitting enter)
-            if i == 'back': #gives a way out
-                print("No cards selected.")
-                return i #returns i to the main program as 'back'
-            if i.isdigit() == True: #checks if the user input is a number
-                if i == 0: #checks for 0 entry
-                    print("No cards selected.")
-                else:
-                    return int(i)  # returns either valid number or 0
-            if i.isdigit() == False:
-                print("Incorrect entry. Please enter a number, or type 'back' or '0' to leave.")
-
-        else: #if not i, then print error instead of passing junk
-            print("Incorrect entry. Please enter a number, or type 'back' or '0' to leave.")
