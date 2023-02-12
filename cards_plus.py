@@ -10,7 +10,7 @@ from colorama import Fore, Back, Style #gives us come color options
 colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
-    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn, guessed_this_turn, pvp_in_hand):
+    def __init__(self, playernumber, cardsinhand, current_turn, playername, collected_clues, dialed_this_turn, guessed_this_turn, pvp_in_hand, pvp_this_turn):
         self.playernumber = playernumber    #Class Player gets a "playernumber" attribute
         self.cardsinhand = cardsinhand      #Class Player gets a "cardsinhand" attribute
         self.current_turn = current_turn      #gives a boolean flag for if the player is currently playing or not
@@ -19,18 +19,19 @@ class Player:  #class Player constructor
         self.dialed_this_turn = dialed_this_turn #a flag for limiting 1 dial per turn
         self.guessed_this_turn = guessed_this_turn #only one guess per turn flag
         self.pvp_in_hand = pvp_in_hand
+        self.pvp_this_turn = pvp_this_turn
 
-player1 = Player(1,[],False,"",[],False,False,[])
-player2 = Player(2,[],False,"",[],False,False,[])
-player3 = Player(3,[],False,"",[],False,False,[])
-player4 = Player(4,[],False,"",[],False,False,[])
+player1 = Player(1,[],False,"",[],False,False,[],False)
+player2 = Player(2,[],False,"",[],False,False,[],False)
+player3 = Player(3,[],False,"",[],False,False,[],False)
+player4 = Player(4,[],False,"",[],False,False,[],False)
 
 all_player_list=[player1,player2,player3,player4]  #all possible players in the game
 player_list=[]  #a list built out by the player's choice of player num
 crush=0  #initalizes game crush global var
 
 class Cards:  #class Cards constructor
-    def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal, first_call):
+    def __init__(self, name, phonenum, hangout, sport, food, clothing, clue_to_reveal, first_call, curse_bucket):
         self.name = name    #Class Cards gets a "name" attribute
         self.phonenum = phonenum  #Card objects have stuff
         self.hangout = hangout
@@ -39,32 +40,33 @@ class Cards:  #class Cards constructor
         self.clothing = clothing
         self.clue_to_reveal = clue_to_reveal #this is where the clues that are revealed in the game assoicate with cards to dial
         self.first_call = first_call #a flag to show if the card has been dialed before
+        self.curse_bucket = curse_bucket #where pvp cards can haunt boy cards
 
 #building Cards objects:
-c0 = Cards("Dave","555-1111","Crosstown Mall","null","Cookies","Blue Jeans","",True)
-c1 = Cards("George","555-1233","Crosstown Mall","null","Ice Cream","Tie","",True)
-c2 = Cards("Dale","555-4566","Crosstown Mall","null","Ice Cream","Jacket","",True)
-c3 = Cards("Alan","555-7899","Crosstown Mall","null","Cookies","Tie","",True)
-c4 = Cards("James","555-2588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","",True)
-c5 = Cards("Phil","555-3333","E.A.T.S. Snack Shop","null","Pizza","Glasses","",True)
-c6 = Cards("Bruce","555-3699","E.A.T.S. Snack Shop","null","Pizza","Tie","",True)
-c7 = Cards("Tyler","555-1477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","",True)
-c8 = Cards("Jamal","555-9877","Reel Movies","null","Candy","Tie","",True)
-c9 = Cards("Gary","555-3211","Reel Movies","null","Popcorn","Blue Jeans","",True)
-c10 = Cards("Dan","555-7777","Reel Movies","null","Candy","Blue Jeans","",True)
-c11 = Cards("Spencer","555-6544","Reel Movies","null","Popcorn","Jacket","",True)
-c12 = Cards("Mark","555-8522","Woodland Park","Baseball","null","Hat","",True)
-c13 = Cards("Jason","555-7411","Woodland Park","Baseball","null","Glasses","",True)
-c14 = Cards("Steve","555-9999","Woodland Park","Skateboarding","null","Jacket","",True)
-c15 = Cards("John","555-9633","Woodland Park","Skateboarding","null","Anything Yellow","",True)
-c16 = Cards("Paul","555-5515","High Tide Beach","Volleyball","null","Anything Yellow","",True)
-c17 = Cards("Tony","555-2442","High Tide Beach","Volleyball","null","Hat","",True)
-c18 = Cards("Wayne","555-3535","High Tide Beach","Surfing","null","Anything Yellow","",True)
-c19 = Cards("Mike","555-2226","High Tide Beach","Surfing","null","Hat","",True)
-c20 = Cards("Scott","555-5599","Jim's Gym","Basketball","null","Anything Yellow","",True)
-c21 = Cards("Bob","555-4884","Jim's Gym","Basketball","null","Glasses","",True)
-c22 = Cards("Carlos","555-6668","Jim's Gym","Tennis","null","Hat","",True)
-c23 = Cards("Matt","555-7557","Jim's Gym","Tennis","null","Glasses","",True)
+c0 = Cards("Dave","555-1111","Crosstown Mall","null","Cookies","Blue Jeans","",True,[])
+c1 = Cards("George","555-1233","Crosstown Mall","null","Ice Cream","Tie","",True,[])
+c2 = Cards("Dale","555-4566","Crosstown Mall","null","Ice Cream","Jacket","",True,[])
+c3 = Cards("Alan","555-7899","Crosstown Mall","null","Cookies","Tie","",True,[])
+c4 = Cards("James","555-2588","E.A.T.S. Snack Shop","null","Hot Dogs","Jacket","",True,[])
+c5 = Cards("Phil","555-3333","E.A.T.S. Snack Shop","null","Pizza","Glasses","",True,[])
+c6 = Cards("Bruce","555-3699","E.A.T.S. Snack Shop","null","Pizza","Tie","",True,[])
+c7 = Cards("Tyler","555-1477","E.A.T.S. Snack Shop","null","Hot Dogs","Blue Jeans","",True,[])
+c8 = Cards("Jamal","555-9877","Reel Movies","null","Candy","Tie","",True,[])
+c9 = Cards("Gary","555-3211","Reel Movies","null","Popcorn","Blue Jeans","",True,[])
+c10 = Cards("Dan","555-7777","Reel Movies","null","Candy","Blue Jeans","",True,[])
+c11 = Cards("Spencer","555-6544","Reel Movies","null","Popcorn","Jacket","",True,[])
+c12 = Cards("Mark","555-8522","Woodland Park","Baseball","null","Hat","",True,[])
+c13 = Cards("Jason","555-7411","Woodland Park","Baseball","null","Glasses","",True,[])
+c14 = Cards("Steve","555-9999","Woodland Park","Skateboarding","null","Jacket","",True,[])
+c15 = Cards("John","555-9633","Woodland Park","Skateboarding","null","Anything Yellow","",True,[])
+c16 = Cards("Paul","555-5515","High Tide Beach","Volleyball","null","Anything Yellow","",True,[])
+c17 = Cards("Tony","555-2442","High Tide Beach","Volleyball","null","Hat","",True,[])
+c18 = Cards("Wayne","555-3535","High Tide Beach","Surfing","null","Anything Yellow","",True,[])
+c19 = Cards("Mike","555-2226","High Tide Beach","Surfing","null","Hat","",True,[])
+c20 = Cards("Scott","555-5599","Jim's Gym","Basketball","null","Anything Yellow","",True,[])
+c21 = Cards("Bob","555-4884","Jim's Gym","Basketball","null","Glasses","",True,[])
+c22 = Cards("Carlos","555-6668","Jim's Gym","Tennis","null","Hat","",True,[])
+c23 = Cards("Matt","555-7557","Jim's Gym","Tennis","null","Glasses","",True,[])
 
 ##global stuff##
 card_list = [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23]
@@ -244,50 +246,128 @@ def print_current_player_hand():
         print(f"|{i.long_name}|",end=" ")
     print(end="\n")
 
-def use_pvp():
-    if len(player_list) > 1:   #checks for 2 or more player game
+
+def use_pvp():   #this one is crazy
+    opponent_list = copy.copy(player_list)
+    opponent_list.remove(whos_turn())   #we need a list of players that doesn't include current player
+    op_player_nums = []
+    for i in opponent_list: op_player_nums.append(int(i.playernumber))  # making a bucket of all valid opponent player numbers
+    op_player_names = []
+    for i in opponent_list: op_player_names.append(i.playername)  # making a bucket of all valid opp player names
+    op_player_names = [element.lower() for element in op_player_names]
+
+    ###checks that the player can use PVP###
+    if len(player_list) == 1: # halt unless at least a 2 player game
+        print("You cannot use PvP Cards in a 1 player game.")
+        return
+
+    if whos_turn().pvp_this_turn == True: #halt if you have used a pvp card already this turn
+        print("Cannot use more than one PvP card per turn.")
+        return
+
+    if whos_turn().pvp_this_turn == False:
         if len(whos_turn().pvp_in_hand) != 0:  #checks that hand is not empty
-            print("Please select a PvP card to use.")
-            for i in whos_turn().pvp_in_hand:
-                print(f"{whos_turn().pvp_in_hand.index(i)} - {i.long_name}")
+            print("Please select a PvP card to use (number input), or ('exit') to leave.")
+        else:
+            print("You have no PvP Cards to use.")
+            return
 
-            while True:
-                try:
-                    choice = int(input())
-                    for i in whos_turn().pvp_in_hand:
-                        if choice == int(whos_turn().pvp_in_hand.index(i)):
-                            selected_pvp = whos_turn().pvp_in_hand[choice]
-                            print("You chose",selected_pvp.long_name,"\n")
+    ###chosing a pvp card###
+    for i in whos_turn().pvp_in_hand: print(f"{whos_turn().pvp_in_hand.index(i)} - |{i.long_name}|")   #prints out all the available pvp cards in hand
+
+    valid_choice = False
+    while valid_choice == False:  #loop that only breaks when valid choice in made
+        choice = input()
+        if choice == 'exit':   #leaves pvp
+            print("\nExiting PvP.")
+            return
+        if choice.isdigit() == True:   #filters for num input
+            if int(choice) not in range(int(len(whos_turn().pvp_in_hand))):  #if it's a num but not a possible correct one
+                print("Entered number not in range of valid choices, try again.")   #print error
+            for i in whos_turn().pvp_in_hand:   #iterate over your pvp hand
+                if int(choice) == int(whos_turn().pvp_in_hand.index(i)):   #checks input against pvp cards
+                    selected_pvp = whos_turn().pvp_in_hand[int(choice)]   #sets choice as var selected_pvp
+                    print(f"\nYou chose |{selected_pvp.long_name}|\n")
+                    valid_choice = True
                     break
-                except: print("Invalid choice.")
+        else: print("Please enter selection as a number. Try again.")
 
-        print(f"Choose a player to curse with {selected_pvp.long_name}.")
-        opponent_list = copy.copy(player_list)
-        opponent_list.remove(whos_turn())
-        for i in opponent_list: print(i.playernumber,"-",i.playername)
+    ###chosing a player to use card on###
+    print(f"Choose a player to curse with {selected_pvp.long_name}. Type name or number, or ('exit') to leave.")
+    for i in opponent_list: print(i.playernumber,"-",i.playername)  #prints opponents
 
-        for i in opponent_list:
-            while True:
-                try:
-                    choice = input()
-                    if choice.isnumeric() == True:
-                        if int(choice) == int(i.playernumber):
-                            selected_player = i
-                            break
-                        else: print("Invalid Number.")
-                    else:
-                        if choice.lower() == str(i.playername.lower()):
-                            selected_player = i
-                            break
-                        else: print("Invalid name.")
-                except: print("Not a valid player choice.")
+    valid_choice = False  #setting up a big loop defined of two little loops, number check and name check
+    while valid_choice == False:  #do this until good name or num return
+        choice = input()
 
-        print(f"You have selected {selected_player.playername}.")
-        print(f"Select a card of {selected_player.playername}'s to curse.")
-        for i in selected_player.cardsinhand:
-            print (selected_player.cardsinhand.index(i), i.name)
+        if choice == 'exit':
+            print("\nExiting PvP.")
+            return
 
+        if choice.isdigit() == True:   #filters for input being a number
+            if int(choice) not in op_player_nums:  # checks choice against valid player numbers
+                print("Entered number not in range of valid choices, try again.")  # if not, throw an error
+        if choice.isdigit() == False:
+            if choice.lower() not in op_player_names:  # run choice against all possible opponent player names
+                print("Invalid player name, try again.")  # if not, throw an error
 
+        for i in opponent_list:   #look through opponent list
+            if choice.isdigit() == True:   #if player enters a number
+                if int(choice) == int(i.playernumber):  #if num entry is a valid opponent number
+                    opponent_player = i #sets opponent_player as the number you selected from list
+                    valid_choice = True #sets flag to leave big loop
+                    break   #leaves opponent list loop
+            else:   #if not a digit, then name
+                if choice.lower() == i.playername.lower():  #seeing if you typed the player name instead of player number
+                    opponent_player = i #sets opponent_player as the name player typed from list
+                    valid_choice = True  #sets flag to leave big loop
+                    break #leaves opponent list loop
+
+    print(f"You have selected {opponent_player.playername}.\n")
+
+    ###chosing which of your opponents cards to curse###
+
+    op_player_card_names = []   #bucket for opponent player card names
+    op_player_card_nums = []   #same for card numbers based on list index
+
+    for i in opponent_player.cardsinhand: op_player_card_names.append(i.name)   #filling op_player_card_names bucket
+    op_player_card_names = [element.lower() for element in op_player_card_names]   #making cardnames lowercase
+
+    for i in opponent_player.cardsinhand: op_player_card_nums.append(opponent_player.cardsinhand.index(i)) #filling op_player_card_nums bucket
+
+    print(f"Select a card of {opponent_player.playername}'s to curse. Type name or number, or ('exit') to leave.")
+    for i in opponent_player.cardsinhand: print(f"{opponent_player.cardsinhand.index(i)} - |{i.name}|")  #list's the selected player's hand
+
+    valid_choice = False
+    while valid_choice == False:
+        choice = input()
+        if choice == 'exit': return
+
+        if choice.isdigit() == True:
+            if int(choice) not in op_player_card_nums:  # run choice against all possible opponent card nums
+                print("Invalid Opponent Card number, try again.")  # if not, throw an error
+        else:
+            if choice.lower not in op_player_card_names:
+                print("Invalid Opponent Card name, try again.")
+
+        for i in opponent_player.cardsinhand:
+            if choice.isdigit() == True:
+                if int(choice) == int(opponent_player.cardsinhand.index(i)):
+                    selected_card = i  # sets var selected_card based on cards in hand index number
+                    print("good num result")
+                    valid_choice = True
+                    break
+            else:
+                if choice.lower() == str(i.name.lower()):  #seeing if you typed the player name instead of player number
+                    selected_card = i
+                    valid_choice = True
+                    break
+
+    selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
+    selected_card.curse_bucket.append(whos_turn().pvp_in_hand.pop(opponent_player.cardsinhand.index(i)))   #moves the pvp card into the curse bucket of the opponents boy card
+    whos_turn().pvp_this_turn = True   #makes it so players can only use once per turn, resets on end sequence
+    print(f"You have cursed {opponent_player.playername}'s {selected_card.name} card.")
+    for i in selected_card.curse_bucket: print(i.long_name)
 
 def call_number(choice):
     if whos_turn().dialed_this_turn == False:
@@ -403,6 +483,7 @@ def end_turn(number_of_players):
         whos_turn().current_turn = False    #turns off current player turn flag
         former_player.dialed_this_turn = False #allows this player to dial again next turn
         former_player.guessed_this_turn = False #allows player ending turn to guess next turn
+        former_player.pvp_this_turn = False #resets ability to use PvP again
         print("next player up:",player_list[next_player_num].playername)
         delay()
         player_list[next_player_num].current_turn = True    #turns on next player turn flag
