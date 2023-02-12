@@ -366,7 +366,9 @@ def use_pvp():   #this one is crazy
     selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
     selected_card.curse_bucket.append(whos_turn().pvp_in_hand.pop(opponent_player.cardsinhand.index(i)))   #moves the pvp card into the curse bucket of the opponents boy card
     whos_turn().pvp_this_turn = True   #makes it so players can only use once per turn, resets on end sequence
-    print(f"\nYou have cursed {opponent_player.playername}'s '{selected_card.name}' Boy card.\nThe PvP card has been removed from your hand.")
+    print(f"\nYou have cursed {opponent_player.playername}'s '{selected_card.name}' Boy card.")
+    long_delay()
+    print("The spent PvP card has been removed from your hand.")
     long_delay()
 
 def call_number(choice):
