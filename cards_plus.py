@@ -346,15 +346,15 @@ def use_pvp():   #this one is crazy
         if choice.isdigit() == True:
             if int(choice) not in op_player_card_nums:  # run choice against all possible opponent card nums
                 print("Invalid Opponent Card number, try again.")  # if not, throw an error
-        else:
-            if choice.lower not in op_player_card_names:
+
+        if choice.isdigit() == False:
+            if choice.lower() not in op_player_card_names:
                 print("Invalid Opponent Card name, try again.")
 
         for i in opponent_player.cardsinhand:
             if choice.isdigit() == True:
                 if int(choice) == int(opponent_player.cardsinhand.index(i)):
                     selected_card = i  # sets var selected_card based on cards in hand index number
-                    print("good num result")
                     valid_choice = True
                     break
             else:
@@ -366,8 +366,8 @@ def use_pvp():   #this one is crazy
     selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
     selected_card.curse_bucket.append(whos_turn().pvp_in_hand.pop(opponent_player.cardsinhand.index(i)))   #moves the pvp card into the curse bucket of the opponents boy card
     whos_turn().pvp_this_turn = True   #makes it so players can only use once per turn, resets on end sequence
-    print(f"You have cursed {opponent_player.playername}'s {selected_card.name} card.")
-    for i in selected_card.curse_bucket: print(i.long_name)
+    print(f"\nYou have cursed {opponent_player.playername}'s '{selected_card.name}' Boy card.\nThe PvP card has been removed from your hand.")
+    long_delay()
 
 def call_number(choice):
     if whos_turn().dialed_this_turn == False:
