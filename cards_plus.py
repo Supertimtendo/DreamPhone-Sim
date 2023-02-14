@@ -95,6 +95,15 @@ pvp11 = Pvp_Cards("speakerphone",player4,[],"Speakerphone")
 
 pvp_list = [pvp0,pvp1,pvp2,pvp3,pvp4,pvp5,pvp6,pvp7,pvp8,pvp9,pvp10,pvp11]
 
+class Messages:
+    def __init__(self, reveal_to, sent_from, message, active):
+        self.type = type
+        self.reveal_to = reveal_to  #who to send message to
+        self.sent_from = sent_from  #who sent it
+        self.message = message   #the message
+        self.active = active  # if it is on or off
+
+
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck. Use game_deck when moving stuff around, use card_list as universal master ref)
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
@@ -168,8 +177,6 @@ def starting_deal():
             if p.player_owner == player4: player4.pvp_in_hand.append(p)
         print("All Players have drawn 3 boy cards from the deck,\nand have 3 PvP cards in hand.")
 
-
-
 def check_decks():
     if len(game_deck) == 0: reshuffle()
 
@@ -198,9 +205,6 @@ def set_number_of_players():
                 player_list.append(all_player_list[i])
             return number_of_players
         except: print("Please enter ('1','2','3' or '4') to select number of players.")
-
-
-
 
 def name_players():
     for i in player_list:
@@ -245,6 +249,40 @@ def print_current_player_hand():
     for i in whos_turn().pvp_in_hand:
         print(f"|{i.long_name}|",end=" ")
     print(end="\n")
+    for i in whos_turn().cardsinhand:
+        if len(i.curse_bucket) > 0:
+            for c in i.curse_bucket:
+                print(f"Your {i.name} card is cursed, curse applied by {c.player_owner.playername}")
+
+
+
+def check_for_curse(last_dialed_boy):
+    if len(last_dialed_boy.curse_bucket) > 0:
+        for i in last_dialed_boy.curse_bucket:
+            if i.type == "hangup":
+                return mom_says_hang_up(last_dialed_boy) #end current turn and remove card, add message to players turn
+            if i.type == "share_secret":
+                return share_a_secret(last_dialed_boy) # continue to clue reveal but apply clue to both players, add message to player who applied curse, card goes into hand of cursed player
+            if i.type == "speakerphone":
+                return speakerphone(last_dialed_boy) #reveal to all, add message to other players, burn card
+    else: return "no_curse"
+
+
+def share_a_secret(last_dialed_boy):
+    print("made it to share a secret function")
+    for i in last_dialed_boy.curse_bucket:
+        curse = i
+    who_sent_curse = i.player_owner
+    who_was_cursed = last_dialed_boy
+    message = Messages(who_sent_curse,who_was_cursed,"Share a Secret",True)
+    print(f"Oh no! It looks like {i.player_owner} has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
+          f" Your revealed clue will also be added to their notebook. However, you will gain posession of their expended |Share a Secret| card.")
+
+def mom_says_hang_up(last_dialed_boy):
+    print("made it to mom says hangup function")
+
+def speakerphone(last_dialed_boy):
+    print("made it to speakerphone function")
 
 
 def use_pvp():   #this one is crazy
@@ -362,6 +400,9 @@ def use_pvp():   #this one is crazy
                     selected_card = i
                     valid_choice = True
                     break
+        if len(selected_card.curse_bucket) > 0:   #only allows one curse per card
+            print("Sorry, this card is already cursed. Try again on another selection.")
+            return
 
     selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
     selected_card.curse_bucket.append(whos_turn().pvp_in_hand.pop(opponent_player.cardsinhand.index(i)))   #moves the pvp card into the curse bucket of the opponents boy card
@@ -426,6 +467,8 @@ def clue_reveal(last_dialed_boy):
         if last_dialed_boy.clue_to_reveal == i.clothing: response = "clothing_reveal"
     #redial modifier in card class
 
+#    check_for_curse(last_dialed_boy)
+
     if last_dialed_boy.first_call == True:   #checks if this is your first time calling them
         print(blue_out(f"Hello? This is {last_dialed_boy.name}. You want to know about your crush?"))
         long_delay()
@@ -438,7 +481,6 @@ def clue_reveal(last_dialed_boy):
     if response == "food_reveal": print(blue_out("He eats a lot of food,"))
     if response == "clothing_reveal": print(blue_out("He looks good in whatever he wears,"))
     long_delay()
-
 
     #quiet response, only player hears
     grammar = ""
