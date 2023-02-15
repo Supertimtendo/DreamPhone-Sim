@@ -107,7 +107,7 @@ def delay():
 def short_delay():
     time.sleep(.2)
 def long_delay():
-    time.sleep(1)
+    time.sleep(2)
 
 #Some TEXT STYLE stuff
 def blue_out(text): #red_out is how i am crossing out entries in the notepad
@@ -181,7 +181,7 @@ def print_whos_turn():
     for i in player_list:
         if i.current_turn == True:
             current_player = i
-            print(f"\nIt is {current_player.playername}'s turn (Player {current_player.playernumber}).\n")
+            print(f"\n{Back.LIGHTBLACK_EX + Fore.BLUE}It is {current_player.playername}'s turn (Player {current_player.playernumber}).{Style.RESET_ALL}\n")
             return current_player
 
 def set_number_of_players():
@@ -260,23 +260,27 @@ def check_for_curse(last_dialed_boy):
     else: return "no_curse"
 
 def share_a_secret(last_dialed_boy):
-    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
-          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
-          f"Your revealed clue will also be added to their notebook. However, you will gain possession of their expended |Share a Secret| card.\n")
+    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
+          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n")
+    long_delay()
+    print(red_out("Your revealed clue will also be added to their notepad. However, you will gain possession of their expended |Share a Secret| card."),"\n")
+    long_delay()
     long_delay()
     return "secret"
 
 def mom_says_hang_up(last_dialed_boy):
-    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
+    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
           f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name}card with |Mom Says Hang Up|\n")
     long_delay()
-    print(f"You must discard your {last_dialed_boy.name} and lose a turn.\n")
+    print(Back.RED + Fore.WHITE,"You must discard your",last_dialed_boy.name,"and lose a turn.",Style.RESET_ALL,"\n")
+    long_delay()
     long_delay()
     return "hangup"
 def speakerphone(last_dialed_boy):
-    print(f"Oh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
-          f"(Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
-          f" Your revealed clue from {last_dialed_boy.name} will also be added every player's notebook.")
+    print(f"Oh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
+          f"(Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|")
+    print(Back.RED + Fore.WHITE,"Your revealed clue from",{last_dialed_boy.name},"will also be added every player's notepad.",Style.RESET_ALL,"\n")
+    long_delay()
     long_delay()
     return "speaker"
 
@@ -461,11 +465,11 @@ def clue_reveal(last_dialed_boy):
         if last_dialed_boy.clue_to_reveal == i.sport: response = "sport_reveal"
         if last_dialed_boy.clue_to_reveal == i.food: response = "food_reveal"
         if last_dialed_boy.clue_to_reveal == i.clothing: response = "clothing_reveal"
-    #redial modifier in card class
+
+#### player vs player effects when dialed ####
 
     curse_mod = check_for_curse(last_dialed_boy)
 
-    #if curse_mod == "secret":
     #if curse_mod == "speaker":
     if curse_mod == "hangup":
         last_dialed_boy.curse_bucket.remove(last_dialed_boy.curse_bucket[0])   #deletes the curse from the game
@@ -495,11 +499,24 @@ def clue_reveal(last_dialed_boy):
     if response == "food_reveal": print(red_out(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
     if response == "clothing_reveal": print(red_out(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
 
+    whos_turn().collected_clues.append(last_dialed_boy)   #add clue to notepad
 
+    if curse_mod == "secret":
+        also_give_clue = last_dialed_boy.curse_bucket[0].player_owner
+        also_give_clue.collected_clues.append(last_dialed_boy) #player who used curse card gets clue
+        whos_turn().pvp_in_hand.append(last_dialed_boy.curse_bucket[0])   #copy pvp card to whosturn
+        last_dialed_boy.curse_bucket.remove(last_dialed_boy.curse_bucket[0])  #remove curse card from boy card
+        for i in whos_turn().pvp_in_hand:
+            i.player_owner = whos_turn()   #brute force changes the owner flag of the pvp cards in who's turn hand
 
-    whos_turn().collected_clues.append(last_dialed_boy)
+    if curse_mod == "speaker":
+        print("speakerphone script works")
+        for i in player_list:
+            i.collected_clues.append(last_dialed_boy)   #give clue to all players in the game
+        last_dialed_boy.curse_bucket.remove(last_dialed_boy.curse_bucket[0])   #delete the speakerphone card from the game
+
+        #pvp card changes hand and owner assignment
     last_dialed_boy.first_call = False  #this is where redial snark is set
-
 
     choice = "null"
     long_delay()
@@ -574,8 +591,10 @@ def solve(crush, number_of_players):
         if result == "crush":
             long_delay()
             print(f"{crush_object.name} is your crush!\n")
+            print(f"Congratulations! {whos_turn().playername} (Player {whos_turn().playernumber}) has won the game.")
             long_delay()
-            print("Game over! but not really i'm still working on the program.")
+            print("Game Over!")
+            print("Thank you for playing! I hope you had fun. \n                                  - Old Kid")
             long_delay()
             long_delay()
             if number_of_players > 1: whos_turn().guessed_this_turn = True
