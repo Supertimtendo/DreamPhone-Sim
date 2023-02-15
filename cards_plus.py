@@ -6,7 +6,7 @@ import colorama #fixes windows shell color bugs
 from colorama import Fore, Back, Style #gives us come color options
 ### installing colorama: pip install colorama
 ### installing prettytable: python -m pip install -U prettytable
-
+import click # Import click library for good screen clearing function
 colorama.init() #turns on windows shell fix
 
 class Player:  #class Player constructor
@@ -100,14 +100,17 @@ in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
 
 #functions
+def clear_screen():
+    # Clear screen using click.clear() function
+    click.clear()
 
 #Text Speed Delay Settings
 def delay():
-    time.sleep(.5)
-def short_delay():
-    time.sleep(.2)
-def long_delay():
     time.sleep(2)
+def short_delay():
+    time.sleep(1)
+def long_delay():
+    time.sleep(3)
 
 #Some TEXT STYLE stuff
 def blue_out(text): #red_out is how i am crossing out entries in the notepad
@@ -136,8 +139,10 @@ def boy_attribute_table():   #this is an automated notepad of the clues you have
         if i.food == "null": food = ""   #removing null entries for food sport weirdness
         notepad.add_row([name,hangout, sport+food, clothing, listname])   #adds rows qeued up for printing
     notepad.align="l"   #aligns the table to the left
+    clear_screen()
     print(notepad)  #prints notepad
     input("Press Enter to continue...")
+    clear_screen()
 
 def new_game_crush():
     clue_list = []  # makes bucket to hold all valid clues in
@@ -167,6 +172,10 @@ def starting_deal():
             if p.player_owner == player3: player3.pvp_in_hand.append(p)
             if p.player_owner == player4: player4.pvp_in_hand.append(p)
         print("All Players have drawn 3 boy cards from the deck,\nand have 3 PvP cards in hand.")
+        print("Clearing screen...")
+        delay()
+        delay()
+        clear_screen()
 
 def check_decks():
     if len(game_deck) == 0: reshuffle()
@@ -189,8 +198,12 @@ def set_number_of_players():
     while True:
         try:
             num = int(input())
-            if num == 1: print("You have selected 1 player.")
-            if num in range(2,4): print(f"You have selected {num} players.")  # grammar motherfuckers!
+            if num == 1:
+                print("\nYou have selected 1 player.")
+                delay()
+            if num in range(2,4):
+                print(f"\nYou have selected {num} players.")  # grammar motherfuckers!
+                delay()
             number_of_players = int(num)
             for i in range(number_of_players):
                 player_list.append(all_player_list[i])
@@ -199,11 +212,11 @@ def set_number_of_players():
 
 def name_players():
     for i in player_list:
-        print(f"Please give Player {i.playernumber} a name.")
+        print(f"\nPlease give Player {i.playernumber} a name.")
         name = input()
         i.playername = name
 
-    print("The names you have chosen are:")
+    print("\nThe names you have chosen are:")
     short_delay()
     for i in player_list:
         print(f"Player {i.playernumber}, {i.playername}")
@@ -216,7 +229,7 @@ def starting_player():
             break
         return
     while True:
-        print(f"Choose which player wants to start 1 to {len(player_list)}?")
+        print(f"\nPlease choose the starting player by entering their player number.")
         choice = input()
         if choice:
             if choice.lower() == "one": choice = 1
@@ -228,6 +241,7 @@ def starting_player():
                     if int(choice) == i.playernumber:
                         i.current_turn = True
                         print(f"Player {i.playernumber} will go first.")
+                        short_delay()
                 break
         else: print("Not a valid choice.")
 
@@ -261,16 +275,17 @@ def check_for_curse(last_dialed_boy):
 
 def share_a_secret(last_dialed_boy):
     print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
-          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n")
+          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|!\n")
     long_delay()
-    print(red_out("Your revealed clue will also be added to their notepad. However, you will gain possession of their expended |Share a Secret| card."),"\n")
+    print(Back.RED + Fore.WHITE,"Your revealed clue from",last_dialed_boy.name,\
+    "will also be added to their notepad. However, you will gain possession of their expended |Share a Secret| PvP card.", Style.RESET_ALL, "\n")
     long_delay()
     long_delay()
     return "secret"
 
 def mom_says_hang_up(last_dialed_boy):
     print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
-          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name}card with |Mom Says Hang Up|\n")
+          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name}card with |Mom Says Hang Up|!\n")
     long_delay()
     print(Back.RED + Fore.WHITE,"You must discard your",last_dialed_boy.name,"and lose a turn.",Style.RESET_ALL,"\n")
     long_delay()
@@ -278,8 +293,8 @@ def mom_says_hang_up(last_dialed_boy):
     return "hangup"
 def speakerphone(last_dialed_boy):
     print(f"Oh no! {last_dialed_boy.curse_bucket[0].player_owner.playername} "
-          f"(Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|")
-    print(Back.RED + Fore.WHITE,"Your revealed clue from",{last_dialed_boy.name},"will also be added every player's notepad.",Style.RESET_ALL,"\n")
+          f"(Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Speakerphone|!")
+    print(Back.RED + Fore.WHITE,"Your revealed clue from",last_dialed_boy.name,"will also be added to every player's notepad.",Style.RESET_ALL,"\n")
     long_delay()
     long_delay()
     return "speaker"
@@ -510,7 +525,6 @@ def clue_reveal(last_dialed_boy):
             i.player_owner = whos_turn()   #brute force changes the owner flag of the pvp cards in who's turn hand
 
     if curse_mod == "speaker":
-        print("speakerphone script works")
         for i in player_list:
             i.collected_clues.append(last_dialed_boy)   #give clue to all players in the game
         last_dialed_boy.curse_bucket.remove(last_dialed_boy.curse_bucket[0])   #delete the speakerphone card from the game
@@ -559,6 +573,7 @@ def end_turn(number_of_players):
 
         for i in card_list:     #Reset redial flag when players swap
             i.first_call = True
+        clear_screen()
 
 def count():
     print(f"\n====Status====")
@@ -606,7 +621,7 @@ def solve(crush, number_of_players):
 
 def shuffle():  # shuffles the game deck
     random.shuffle(game_deck)
-    print("\nCards in the game deck have been shuffled. ")
+    print("\nCards in the game deck have been shuffled.")
     delay()
 
 def reshuffle():
@@ -623,7 +638,8 @@ def reshuffle():
 def game_loop():
     crush = new_game_crush()
     valid_choices=["null","notepad","dial","end","count","redial","solve", "pvp"] # commands that work at start
-    print("\nWelcome to Dream Phone Simulator. This is incomplete but getting better!\n")
+    print("\nWelcome to Dream Phone Simulator Version 0.1, a computer simulation of the 1991 board game 'Dreamphone'. \
+          \nPlease see included dp_instructions.txt for more information.\n")
     delay()
     number_of_players = set_number_of_players()
     name_players()
@@ -635,7 +651,7 @@ def game_loop():
         print_whos_turn()
         print_current_player_hand()
         check_decks()
-        print (white_out("Commands: ('dial') - ('notepad') - ('pvp') - ('solve') - ('redial) - ('end')"),"\n")
+        print (white_out("Commands: ('dial') - ('notepad') - ('pvp') - ('solve') - ('redial') - ('end')"),"\n")
         choice = input().lower()
 
         if 'dial' in choice and choice != 'redial':
