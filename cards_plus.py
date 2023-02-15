@@ -95,15 +95,6 @@ pvp11 = Pvp_Cards("speakerphone",player4,[],"Speakerphone")
 
 pvp_list = [pvp0,pvp1,pvp2,pvp3,pvp4,pvp5,pvp6,pvp7,pvp8,pvp9,pvp10,pvp11]
 
-class Messages:
-    def __init__(self, reveal_to, sent_from, message, active):
-        self.type = type
-        self.reveal_to = reveal_to  #who to send message to
-        self.sent_from = sent_from  #who sent it
-        self.message = message   #the message
-        self.active = active  # if it is on or off
-
-
 game_deck = copy.copy(card_list)  # this clones from the master list for the "in game" deck. Use game_deck when moving stuff around, use card_list as universal master ref)
 in_hand = []  # initializes player hand as empty
 discard_pile = []  # initializes discard pile as empty
@@ -249,12 +240,13 @@ def print_current_player_hand():
     for i in whos_turn().pvp_in_hand:
         print(f"|{i.long_name}|",end=" ")
     print(end="\n")
+    print_current_curses()
+
+def print_current_curses():
     for i in whos_turn().cardsinhand:
         if len(i.curse_bucket) > 0:
             for c in i.curse_bucket:
-                print(f"Your {i.name} card is cursed, curse applied by {c.player_owner.playername}")
-
-
+                print(f"Your {i.name} card is cursed, curse applied by {c.player_owner.playername} with '{c.long_name}'")
 
 def check_for_curse(last_dialed_boy):
     if len(last_dialed_boy.curse_bucket) > 0:
@@ -267,23 +259,26 @@ def check_for_curse(last_dialed_boy):
                 return speakerphone(last_dialed_boy) #reveal to all, add message to other players, burn card
     else: return "no_curse"
 
-
 def share_a_secret(last_dialed_boy):
-    print("made it to share a secret function")
-    for i in last_dialed_boy.curse_bucket:
-        curse = i
-    who_sent_curse = i.player_owner
-    who_was_cursed = last_dialed_boy
-    message = Messages(who_sent_curse,who_was_cursed,"Share a Secret",True)
-    print(f"Oh no! It looks like {i.player_owner} has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
-          f" Your revealed clue will also be added to their notebook. However, you will gain posession of their expended |Share a Secret| card.")
+    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
+          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
+          f"Your revealed clue will also be added to their notebook. However, you will gain possession of their expended |Share a Secret| card.\n")
+    long_delay()
+    return "secret"
 
 def mom_says_hang_up(last_dialed_boy):
-    print("made it to mom says hangup function")
-
+    print(f"\nOh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
+          f" (Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name}card with |Mom Says Hang Up|\n")
+    long_delay()
+    print(f"You must discard your {last_dialed_boy.name} and lose a turn.\n")
+    long_delay()
+    return "hangup"
 def speakerphone(last_dialed_boy):
-    print("made it to speakerphone function")
-
+    print(f"Oh no! {last_dialed_boy.curse_bucket[0].player_owner.playername}"
+          f"(Player {last_dialed_boy.curse_bucket[0].player_owner.playernumber}) has cursed your {last_dialed_boy.name} card with |Share a Secret|\n"
+          f" Your revealed clue from {last_dialed_boy.name} will also be added every player's notebook.")
+    long_delay()
+    return "speaker"
 
 def use_pvp():   #this one is crazy
     opponent_list = copy.copy(player_list)
@@ -404,11 +399,12 @@ def use_pvp():   #this one is crazy
             print("Sorry, this card is already cursed. Try again on another selection.")
             return
 
-    selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
-    selected_card.curse_bucket.append(whos_turn().pvp_in_hand.pop(opponent_player.cardsinhand.index(i)))   #moves the pvp card into the curse bucket of the opponents boy card
     whos_turn().pvp_this_turn = True   #makes it so players can only use once per turn, resets on end sequence
-    print(f"\nYou have cursed {opponent_player.playername}'s '{selected_card.name}' Boy card.")
+    print(f"\nYou have cursed {opponent_player.playername}'s '{selected_card.name}' Boy card with {selected_pvp.long_name}.")
     long_delay()
+    selected_pvp.used_on.append(opponent_player)  # copying opponent player to pvp card attribute bucket "used on"...might not be helpful
+    selected_card.curse_bucket.append(selected_pvp) #adds selected PVP to the opponent's card curse bucket
+    whos_turn().pvp_in_hand.remove(selected_pvp) #removes pvp card from current hand
     print("The spent PvP card has been removed from your hand.")
     long_delay()
 
@@ -467,7 +463,14 @@ def clue_reveal(last_dialed_boy):
         if last_dialed_boy.clue_to_reveal == i.clothing: response = "clothing_reveal"
     #redial modifier in card class
 
-#    check_for_curse(last_dialed_boy)
+    curse_mod = check_for_curse(last_dialed_boy)
+
+    #if curse_mod == "secret":
+    #if curse_mod == "speaker":
+    if curse_mod == "hangup":
+        last_dialed_boy.curse_bucket.remove(last_dialed_boy.curse_bucket[0])   #deletes the curse from the game
+        dialed_discard(last_dialed_boy)   #runs the discard script and skips clue reveal
+        return #nreaks out of current routine
 
     if last_dialed_boy.first_call == True:   #checks if this is your first time calling them
         print(blue_out(f"Hello? This is {last_dialed_boy.name}. You want to know about your crush?"))
@@ -491,8 +494,13 @@ def clue_reveal(last_dialed_boy):
     if response == "sport_reveal": print(red_out(f"but he doesn't like {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
     if response == "food_reveal": print(red_out(f"but he hates the taste of {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
     if response == "clothing_reveal": print(red_out(f"but he doesn't wear {grammar} {last_dialed_boy.clue_to_reveal.lower()}."), "\n")
+
+
+
     whos_turn().collected_clues.append(last_dialed_boy)
     last_dialed_boy.first_call = False  #this is where redial snark is set
+
+
     choice = "null"
     long_delay()
     return choice
@@ -500,7 +508,7 @@ def clue_reveal(last_dialed_boy):
 def dialed_discard(last_dialed_boy):
     if whos_turn().dialed_this_turn == False:
         i = whos_turn().cardsinhand.index(last_dialed_boy)
-        print(f"{last_dialed_boy.name} from your hand has been discarded.\nHis clue information has been added to your Notepad.\n")
+        print(f"{last_dialed_boy.name} from your hand has been discarded.")
         discard_pile.append(whos_turn().cardsinhand.pop(i))  # adds card to discard pile based on in_hand index num
         if len(player_list) > 1: whos_turn().dialed_this_turn = True
 
