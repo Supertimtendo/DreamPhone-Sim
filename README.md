@@ -1,5 +1,6 @@
 # DreamPhone-Sim
 Open Dream Dialer is a project to recreate the 1992 board game Dreamphone in a computer software simulation.
+More information about the project can be found at https://consolemods.org/wiki/Dreamphone.
 
 ## Installation
 DreamPhone-Sim was built to work in Windows 10, but it should work in any Python 3.X compatible OS. 
@@ -40,4 +41,4 @@ I've included "Launch DreamPhone-Sim in Windows.bat" as a quick shortcut you can
 
 If you wish to have Windows use Python to run .py scripts directly:
 Navigate to where you cloned/downloaded DreamPhone-Sim, and select "main.py", then right-click and "open with" - "choose another app" - "more apps" - scroll down and click "look for another app on this PC". Then navigate and select your installed Python executable
-(default is C:\Users\(your user name)\AppData\Local\Programs\Python\Pythonxx\python.exe).
+(default is C:\Users\(your user name)\AppData\Local\Programs\Python\Python(version)\python.exe).
