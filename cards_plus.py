@@ -106,11 +106,11 @@ def clear_screen():
 
 #Text Speed Delay Settings
 def delay():
-    time.sleep(2)
-def short_delay():
     time.sleep(1)
+def short_delay():
+    time.sleep(.5)
 def long_delay():
-    time.sleep(3)
+    time.sleep(2)
 
 #Some TEXT STYLE stuff
 def blue_out(text): #red_out is how i am crossing out entries in the notepad
@@ -172,7 +172,7 @@ def starting_deal():
             if p.player_owner == player3: player3.pvp_in_hand.append(p)
             if p.player_owner == player4: player4.pvp_in_hand.append(p)
         print("All Players have drawn 3 boy cards from the deck,\nand have 3 PvP cards in hand.")
-        print("Clearing screen...")
+        print("Starting Game...")
         delay()
         delay()
         clear_screen()
@@ -254,7 +254,7 @@ def print_current_player_hand():
     for i in whos_turn().pvp_in_hand:
         print(f"|{i.long_name}|",end=" ")
     print(end="\n")
-    print_current_curses()
+    #print_current_curses()  testing routine, disabled for now
 
 def print_current_curses():
     for i in whos_turn().cardsinhand:
@@ -429,10 +429,13 @@ def use_pvp():   #this one is crazy
 
 def call_number(choice):
     if whos_turn().dialed_this_turn == False:
-        valid_call = ()   #initalizes valid call var
+        valid_call = False   #initalizes valid call var
         for i in whos_turn().cardsinhand:   #this checks if dial "boyname" or dial "phonenum" was entered
             if "dial" in choice and str(i.phonenum) in choice or "dial" in choice and str(i.name).lower() in choice:
                 last_dialed_boy = i
+                for x in range(0, 3):
+                    print("*ring*")
+                    short_delay()
                 return last_dialed_boy
 
         print("You pick up the phone to make a call. Please enter a number (or name).")  #get message if dial + nothing useful is entered
@@ -445,14 +448,13 @@ def call_number(choice):
             for i in whos_turn().cardsinhand:
                 if dialed_number == i.phonenum or dialed_number.lower() == i.name.lower():   #added name dial for Clarissa <3
                     for x in range(0,3):
-                        print("ring")
+                        print("*ring*")
                         short_delay()
                     delay()
                     last_dialed_boy = i
                     valid_call = True
 
             if valid_call is True and len(player_list) > 1:
-                whos_turn().dialed_this_turn = True
                 return last_dialed_boy
 
             if valid_call is not True:
@@ -656,9 +658,10 @@ def game_loop():
 
         if 'dial' in choice and choice != 'redial':
             last_dialed_boy = call_number(choice)
-            choice = clue_reveal(last_dialed_boy)
+            clue_reveal(last_dialed_boy)
             dialed_discard(last_dialed_boy)
-            choice = dialed_draw()
+            dialed_draw()
+            choice = "null"
 
         if choice not in valid_choices:
             print("Not a valid choice.")
