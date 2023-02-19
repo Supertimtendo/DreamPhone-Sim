@@ -4,7 +4,7 @@ Open Dream Dialer is a project to recreate the 1992 board game Dreamphone in a c
 # Installation
 DreamPhone-Sim was built to work in Windows 10, but it should work in any Python 3.X compatible OS. 
 
-##Dependencies
+## Dependencies
 Using Windows 10/11:
 If you do not have Python installed, get it from here: https://www.python.org/downloads/windows/
 When installing, make sure Python is added to system PATH. There is a checkbox to tick in the installer to do this. 
@@ -23,7 +23,7 @@ This will install the Colorama extension.
 
 This will install the Prettytable extension.
 
-##Downloading DreamPhone-Sim
+## Downloading DreamPhone-Sim
 If you have Git installed (https://git-scm.com/downloads), simply open the command line (Win + R, "cmd", Enter) and type:
 
 ```git clone DreamPhone-Sim```
@@ -31,10 +31,10 @@ If you have Git installed (https://git-scm.com/downloads), simply open the comma
 If you don't have Git, you can simply click on the main.py, right-click its "Raw" tab on the right side of the page, and "save link as".
 From that dialog box, you can save the "main.py" somewhere on your PC. This method might break if future builds add additional file dependencies, so fall back to the "Git clone" method if this does not work.
 
-##Running DreamPhone-Sim
+# Running DreamPhone-Sim
 The "cleanest" way to run DreamPhone-Sim is from the Windows Command Line. If Python is configured correctly, you can open a command line  (Win + R, "cmd", Enter), navigate to where DreamPhone-Sim is downloaded, and run 
 
-'''Python main.py'''
+```Python main.py```
 
 I've included "Launch DreamPhone-Sim in Windows.bat" as a quick shortcut you can download and run without entering the command line manually. It is assumed to be placed in the same directory as "main.py" to operate correctly (Git Clone will do this automatically). 
 
