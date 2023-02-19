@@ -1,5 +1,5 @@
 # DreamPhone-Sim
-Open Dream Dialer is a project to recreate the 1992 board game Dreamphone in a computer software simulation.
+DreamPhone-Sim is a project to recreate the 1992 board game Dreamphone in computer software simulation.
 More information about the project can be found at https://consolemods.org/wiki/Dreamphone.
 
 ## Installation
