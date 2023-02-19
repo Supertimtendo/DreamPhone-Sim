@@ -638,6 +638,7 @@ def reshuffle():
 # now on to the main loop. it simply checks for inputs to run the outlined functions. nothing too crazy
 
 def game_loop():
+    clear_screen()
     crush = new_game_crush()
     valid_choices=["null","notepad","dial","end","count","redial","solve", "pvp"] # commands that work at start
     print("\nWelcome to Dream Phone Simulator Version 0.1, a computer simulation of the 1991 board game 'Dreamphone'. \

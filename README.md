@@ -1,8 +1,43 @@
 # DreamPhone-Sim
-Open Dream Dialer is a project to recreate Electronic Dream Phone in a computer software simulation. The project is divided into three goals:
+Open Dream Dialer is a project to recreate the 1992 board game Dreamphone in a computer software simulation.
 
-1. Dream Phone Simulator: Recreate as accurately as possible the experience of playing Dream Phone via software recreation. This includes reverse engineering gameplay mechanics, scanning and archiving game board and card assets, and 'Dream Phone Device' dialing behavior and sound effects.
+# Installation
+DreamPhone-Sim was built to work in Windows 10, but it should work in any Python 3.X compatible OS. 
 
-2. Open Dream Dialer: Once Dream Phone Simulator is complete, the goal will be to remove any copyrighted assets from the program and open source release as "Open Dream Dialer". This would include instructions, tools and/or assets for users to create custom game board, card and clue configurations.
+##Dependencies
+Using Windows 10/11:
+If you do not have Python installed, get it from here: https://www.python.org/downloads/windows/
+When installing, make sure Python is added to system PATH. There is a checkbox to tick in the installer to do this. 
 
-3. Open Dream Dialer Device: With the ODD code complete, a "Device" can be made to emulate the behavior of the Dream Phone handset device. This currently is specified as using a Raspberry Pi Pico to run the main game code and audio playback, and I2S audio drivers playing MP3 files in response to the dialed inputs. This would serve as a drop-in alternative to the original Dream Phone handset, as well as opening the opportunity for Open Dream Phone custom user assets to be uploaded to the ODD-Device for custom audio reflecting new clue categories, boy names, responses, etc.
+More information on adding Python to PATH can be found here: https://datatofish.com/add-python-to-windows-path/
+
+Open Dream Dialer requires two Python extensions to work, Colorama and Prettytable.
+
+Once Python is installed, added to path and your system has been rebooted, open the command line (Win + R, "cmd", Enter) and type the following commands:
+
+```pip install colorama```
+
+This will install the Colorama extension.
+
+```python -m pip install -U prettytable```
+
+This will install the Prettytable extension.
+
+##Downloading DreamPhone-Sim
+If you have Git installed (https://git-scm.com/downloads), simply open the command line (Win + R, "cmd", Enter) and type:
+
+```git clone DreamPhone-Sim```
+
+If you don't have Git, you can simply click on the main.py, right-click its "Raw" tab on the right side of the page, and "save link as".
+From that dialog box, you can save the "main.py" somewhere on your PC. This method might break if future builds add additional file dependencies, so fall back to the "Git clone" method if this does not work.
+
+##Running DreamPhone-Sim
+The "cleanest" way to run DreamPhone-Sim is from the Windows Command Line. If Python is configured correctly, you can open a command line  (Win + R, "cmd", Enter), navigate to where DreamPhone-Sim is downloaded, and run 
+
+'''Python main.py'''
+
+I've included "Launch DreamPhone-Sim in Windows.bat" as a quick shortcut you can download and run without entering the command line manually. It is assumed to be placed in the same directory as "main.py" to operate correctly (Git Clone will do this automatically). 
+
+If you wish to have Windows use Python to run .py scripts directly:
+Navigate to where you cloned/downloaded DreamPhone-Sim, and select "main.py", then right-click and "open with" - "choose another app" - "more apps" - scroll down and click "look for another app on this PC". Then navigate and select your installed Python executable
+(default is C:\Users\(your user name)\AppData\Local\Programs\Python\Pythonxx\python.exe).
