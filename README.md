@@ -10,9 +10,7 @@ If you do not have Python installed, get it from here: https://www.python.org/do
 When installing, make sure Python is added to system PATH. There is a checkbox to tick in the installer to do this. 
 
 More information on adding Python to PATH can be found here: https://datatofish.com/add-python-to-windows-path/
-
 Open Dream Dialer requires two Python extensions to work, Colorama and Prettytable.
-
 Once Python is installed, added to path and your system has been rebooted, open the command line (Win + R, "cmd", Enter) and type the following commands:
 
 ```pip install colorama```
