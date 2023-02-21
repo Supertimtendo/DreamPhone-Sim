@@ -27,7 +27,7 @@ This will install the Prettytable extension.
 #### Downloading DreamPhone-Sim
 If you have Git installed (https://git-scm.com/downloads), simply open the command line (Win + R, "cmd", Enter) and type:
 
-```git clone DreamPhone-Sim```
+```git clone https://github.com/Supertimtendo/DreamPhone-Sim```
 
 If you don't have Git, you can simply click on the main.py, right-click its "Raw" tab on the right side of the page, and "save link as".
 From that dialog box, you can save the "main.py" somewhere on your PC. This method might break if future builds add additional file dependencies, so fall back to the "Git clone" method if this does not work.
